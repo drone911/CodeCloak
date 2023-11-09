@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import Search from './components/Search';
 import Upload from './components/Upload';
+import Discover from './components/Discover'
 import { useState } from 'react';
 
 function toggleInputView() {
@@ -16,18 +17,26 @@ function App() {
   }
   return (
     <div className="App">
-      <header className="App-header">
-      </header>
       <body>
-        <img src="/logo.png" alt="CatchMeIfYouScan Logo" />     
-        <h2>Catch Me If You Scan</h2>
-        <p>Dive deep into your pentesting code or executables and discover exactly what security mechanisms caught them.</p>
-        <div name="ActionSelectionButton" onClick={toggleInputView}>
-          <span className="switchText">Upload</span>
-          <div className="switchCircle"></div>
-          <span ClassName="switchText">Search</span>
-        </div>
-        {isActionSearch? <Upload/>: <Search/>}
+        <section className="header-section">
+          <img id='logo' src={logo} alt="CatchMeIfYouScan Logo" />
+        </section>
+
+
+        <section className="upload-or-search-section">
+          <div name="ActionSelectionButton" onClick={toggleInputView}>
+            <span className="switch-text">Upload</span>
+            <div className="switch-circle"></div>
+            <span ClassName="switch-text">Search</span>
+          </div>
+
+          {isActionSearch ? <Upload /> : <Search />}
+        </section>
+
+        <section className="discover-section">
+          <Discover></Discover>
+        </section>
+
       </body>
     </div>
   );
