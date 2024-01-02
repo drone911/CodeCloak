@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "client": "npm start --prefix frontend",
-    "server": "node ./backend/start.js",
+    "server": "nodemon ./backend/start.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
@@ -15,7 +15,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "jest": "^29.7.0",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "supertest": "^6.3.3"
   },
   "dependencies": {

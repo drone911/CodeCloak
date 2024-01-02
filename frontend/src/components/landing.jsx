@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import { Snackbar, Alert } from '@mui/material';
+
+
+import axios from 'axios'
 
 
 const MAX_UPLOAD_FILE_SIZE = 5000000
 
 const Landing = ({ isSmallScreen }) => {
-    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [showFileSizeErrorSnackbar, setShowFileSizeErrorSnackbar] = useState(false);
+    const [showFileUploadErrorSnackbar, setShowFileUploadErrorSnackbar] = useState(false);
+
     const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadProgress, setUploadProgress] = useState(0)
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadComplete, setUploadComplete] = useState(false);
 
     const onFileUpload = async (event) => {
         const file = event.target.files[0];
@@ -21,42 +32,38 @@ const Landing = ({ isSmallScreen }) => {
         }
 
         if (file.size > MAX_UPLOAD_FILE_SIZE) {
-            setShowSnackbar(true);
+            setShowFileSizeErrorSnackbar(true);
             return;
         }
         try {
+            setSelectedFile(file)
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post(`/api/projects/${projectId}/upload`, formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, {
                 onUploadProgress: (progressEvent) => {
                     const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
                     setUploadProgress(progress);
                 },
             });
-
-            // Handle API response
-            console.log('API Response:', response.data);
-
-            // Set upload complete state
             setUploadComplete(true);
 
-            // Redirect to a different page after successful upload
-            setTimeout(() => {
-                history.push('/success');
-            }, 2000); // Redirect after 2 seconds (adjust as needed)
+            console.log('API Response:', response.data);
+            
+
         } catch (error) {
             console.error('Error uploading file:', error);
-            // Handle error as needed
+            setShowFileUploadErrorSnackbar(true);
         }
 
     }
 
     const handleSnackbarClose = (event, reason) => {
-        if (reason == 'clickaway') {
+        if (reason === 'clickaway') {
             return;
         }
-        setShowSnackbar(false);
+        setShowFileSizeErrorSnackbar(false);
+        setShowFileUploadErrorSnackbar(false);
     }
 
     return (
@@ -79,18 +86,21 @@ const Landing = ({ isSmallScreen }) => {
                     {selectedFile && (
                         <div>
                             <LinearProgress variant="determinate" value={uploadProgress} />
-                            <Button type="submit" variant="contained">
-                                Upload Now
-                            </Button>
                         </div>
                     )}
                 </Grid>
             </Grid>
-            <Snackbar open={showSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+            <Snackbar open={showFileSizeErrorSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
                     File size should be less then {MAX_UPLOAD_FILE_SIZE / 1000000} MB
                 </Alert>
             </Snackbar>
+            <Snackbar open={showFileUploadErrorSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
+                    Error uploading file
+                </Alert>
+            </Snackbar>
+
         </Container>
     )
 }

@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const lport = process.env.LPORT || 5000;
+const lport = process.env.NODE_LPORT || 5000;
 const app = require("./server");
 
 
