@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSubmit } from 'react-router-dom';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Container from '@mui/material/Container';
@@ -50,6 +50,11 @@ const Landing = ({ isSmallScreen }) => {
 
             console.log('API Response:', response.data);
             
+            setTimeout(() => {
+                let submit = useSubmit()
+
+                submit()
+            }, 2000)
 
         } catch (error) {
             console.error('Error uploading file:', error);

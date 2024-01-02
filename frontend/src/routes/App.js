@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Route, Routes, Router, RedirectFunction, BrowserRouter, useHistory, redirect } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
+
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Landing from './components/landing';
-import Detect from './components/detect';
+import { lightTheme, darkTheme } from '../theme';
 
-import logo from './logo.svg'
+import logo from '../logo.svg'
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,41 +18,6 @@ import Container from '@mui/material/Container';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 
-const lightTheme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#673ab7',
-      dark: '#482880',
-      light: '#8561c5',
-    },
-    secondary: {
-      main: '#2196f3',
-      dark: '#1769aa',
-      light: '#4dabf5',
-    },
-  },
-});
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#212946',
-      dark: '#212946',
-      light: '#212946',
-    },
-    secondary: {
-      main: '#673ab7',
-      dark: '#1769aa',
-      light: '#4dabf5',
-    },
-    background: {
-      paper: "#212946",
-      default: "#212946"
-    }
-  },
-});
 
 const App = () => {
 
@@ -98,15 +63,7 @@ const App = () => {
             </Toolbar>
           </Container>
         </AppBar>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path=""
-              element={<Landing isSmallScreen={isSmallScreen}/>}
-            />
-            <Route path="/detect/:fileHash" element={<Detect />}></Route>
-          </Routes>
-        </BrowserRouter>
+        <Outlet />
       </CssBaseline>
     </ThemeProvider>
   );
