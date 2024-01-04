@@ -1,11 +1,17 @@
 import * as express from 'express';
 import { Request, Response, NextFunction } from 'express';
+
 import * as cors from "cors";
 import Helmet from "helmet";
 import * as multer from 'multer';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
+
+import { model } from 'mongoose';
+
+// Model Imports
+import { FileModel } from './schemas/FileSchema';
 
 const app = express();
 
@@ -25,20 +31,32 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const hash = crypto.createHash('sha256');
         hash.update(file.originalname + Date.now());
-        cb(null, hash.digest('hex') + path.extname(file.originalname));
-    },
+        cb(null, hash.digest('hex') + path.extname(file.originalname)) + ".blob" ;
+    }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+    storage, limits: {
+        fileSize: Number(process.env.NODE_MAX_UPLOAD_FILE_SIZE)
+    }
+});
 
 app.post('/api/upload', upload.single('file'), async (req: Request, res: Response) => {
     try {
+        console.log(req.file)
         const { path: filePath, filename } = req.file as Express.Multer.File;
         const fileContent = fs.readFileSync(filePath, 'utf-8');
         const currentTimestamp = new Date().getTime();
 
+        console.log(path)
+        console.log(filename)
         const hash = crypto.createHash('sha256').update(fileContent).digest('hex');
+
+        const fileDocument = new FileModel({ storedName: filename, path: filePath, sha256hash: hash, size: req.file?.size })
+        await fileDocument.save()
+
         res.json({ filename, hash });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });

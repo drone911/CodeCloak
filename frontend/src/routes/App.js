@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { lightTheme, darkTheme } from '../theme';
@@ -13,7 +13,6 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
-import Container from '@mui/material/Container';
 
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
@@ -33,9 +32,9 @@ const App = () => {
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <CssBaseline>
         <AppBar position="static" color="transparent" elevation={3}>
-          <Container>
+          
             <Toolbar>
-              <div
+              <div 
                 style={{
                   width: '48px',
                   height: '48px',
@@ -61,7 +60,7 @@ const App = () => {
                 inputProps={{ 'aria-label': 'toggle dark mode' }}
               />
             </Toolbar>
-          </Container>
+          
         </AppBar>
         <Outlet />
       </CssBaseline>

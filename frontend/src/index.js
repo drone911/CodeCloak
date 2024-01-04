@@ -9,9 +9,9 @@ import {
 } from "react-router-dom";
 
 import ErrorPage from "./error-page";
+
 import Landing from './routes/landing';
 import Detect from './routes/detect';
-
 
 const router = createBrowserRouter([
   {
@@ -20,13 +20,13 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "",
+        path: "/",
         element: <Landing />,
       },
       {
         path: "detect/:hash",
         element: <Detect />,
-      },
+      }
     ],
   },
 ]);
