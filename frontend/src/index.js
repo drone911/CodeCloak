@@ -11,7 +11,11 @@ import {
 import ErrorPage from "./error-page";
 
 import Landing from './routes/landing';
+import { landingLoader } from './routes/landing';
+
 import Detect from './routes/detect';
+
+
 
 const router = createBrowserRouter([
   {
@@ -21,6 +25,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
+        loader: landingLoader,
         element: <Landing />,
       },
       {

@@ -7,6 +7,7 @@ import * as multer from 'multer';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as mcache from 'memory-cache';
 
 import { model } from 'mongoose';
 
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const hash = crypto.createHash('sha256');
         hash.update(file.originalname + Date.now());
-        cb(null, hash.digest('hex') + path.extname(file.originalname)) + ".blob" ;
+        cb(null, hash.digest('hex') + path.extname(file.originalname)) + ".blob";
     }
 });
 
@@ -41,6 +42,23 @@ const upload = multer({
     }
 });
 
+
+app.get('/api/file/count', async (req: Request, res: Response) => {
+    let files_count = mcache.get("db_file_count")
+    if (files_count) {
+        res.json({ "count": files_count })
+    } else {
+        try {
+            const files_count = await FileModel.countDocuments({}).exec();
+            mcache.put("db_file_count", files_count, (Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10) * 1000)
+            res.json({ "count": files_count })
+        } catch (error) {
+            console.error('Error fetching document count:', error);
+            res.sendStatus(500).json({ error: 'Internal Server Error' });
+        }
+    }
+})
+
 app.post('/api/upload', upload.single('file'), async (req: Request, res: Response) => {
     try {
         console.log(req.file)
@@ -48,8 +66,6 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
         const fileContent = fs.readFileSync(filePath, 'utf-8');
         const currentTimestamp = new Date().getTime();
 
-        console.log(path)
-        console.log(filename)
         const hash = crypto.createHash('sha256').update(fileContent).digest('hex');
 
         const fileDocument = new FileModel({ storedName: filename, path: filePath, sha256hash: hash, size: req.file?.size })
