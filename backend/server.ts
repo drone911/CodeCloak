@@ -11,7 +11,6 @@ import * as mcache from 'memory-cache';
 
 import { model } from 'mongoose';
 
-// Model Imports
 import { FileModel } from './schemas/FileSchema';
 
 const app = express();
@@ -42,6 +41,7 @@ const upload = multer({
     }
 });
 
+const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50
 
 app.get('/api/file/count', async (req: Request, res: Response) => {
     let files_count = mcache.get("db_file_count")
@@ -51,7 +51,7 @@ app.get('/api/file/count', async (req: Request, res: Response) => {
         try {
             const files_count = await FileModel.countDocuments({}).exec();
             mcache.put("db_file_count", files_count, (Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10) * 1000)
-            res.json({ "count": files_count })
+            res.status(200).json({ "count": files_count })
         } catch (error) {
             console.error('Error fetching document count:', error);
             res.sendStatus(500).json({ error: 'Internal Server Error' });
@@ -61,7 +61,6 @@ app.get('/api/file/count', async (req: Request, res: Response) => {
 
 app.post('/api/upload', upload.single('file'), async (req: Request, res: Response) => {
     try {
-        console.log(req.file)
         const { path: filePath, filename } = req.file as Express.Multer.File;
         const fileContent = fs.readFileSync(filePath, 'utf-8');
         const currentTimestamp = new Date().getTime();
@@ -75,6 +74,25 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
 
     } catch (error) {
         console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+app.get('/files', async (req: Request, res: Response) => {
+    try {
+        const page = Math.min(Math.max(1, Number(req.query.page)), MAX_PAGE_SIZE) || 1;
+        let pageSize = Number(req.query.pageSize) || 10;
+
+        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
+
+        const skip = (page - 1) * pageSize;
+
+        const files = await FileModel.find().skip(skip).limit(pageSize);
+
+        res.status(200).json(files);
+    } catch (error) {
+        console.error('Error fetching files:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLoaderData, useNavigate, Await, defer } from 'react-router-dom';
 
+import RecentFiles from './components/recent-files';
+
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 
@@ -8,6 +10,11 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Box from '@mui/material/Box';
+
+
 import LinearProgress from '@mui/material/LinearProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { lightTheme } from '../theme';
@@ -17,11 +24,39 @@ import { Snackbar, Alert, Paper, Stack } from '@mui/material';
 
 
 import axios from 'axios'
+import MyUploads from './components/my-uploads';
 
 const landingLoader = async () => {
     return defer({
         db_file_count: axios.get(`${process.env.REACT_APP_API_URL}/file/count`)
     })
+}
+function CustomTabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box padding={0}>
+                    {children}
+                </Box >
+            )}
+        </div>
+    );
+}
+
+
+function a11yProps(index) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
 }
 
 export { landingLoader };
@@ -37,6 +72,11 @@ const Landing = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadComplete, setUploadComplete] = useState(false);
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
 
     const onFileChange = async (event) => {
         const file = event.target.files[0];
@@ -93,7 +133,7 @@ const Landing = () => {
         <Container sx={{ paddingTop: 4 }}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                    <Typography variant={isSmallScreen ? 'h2' : 'h1'} sx={{ fontWeight: '400' }}>Catch</Typography>
+                    <Typography variant={isSmallScreen ? 'h2' : 'h1'} sx={{ fontWeight: '400' }}>Detect</Typography>
                     <Typography variant={isSmallScreen ? 'h2' : 'h1'} sx={{ fontWeight: '400' }} color='secondary'>Code Signatures</Typography>
                     <Typography variant={isSmallScreen ? 'h2' : 'h1'} sx={{ fontWeight: '400' }}>Caught by</Typography>
                     <Typography variant={isSmallScreen ? 'h2' : 'h1'} sx={{ fontWeight: '400' }} color='secondary'>Antivirus</Typography>
@@ -167,8 +207,8 @@ const Landing = () => {
                                     <Await
                                         resolve={dataFromLoader.db_file_count}
                                         errorElement={
-                                            <Typography variant="h5" color="error">
-                                                Error loading database file count!
+                                            <Typography variant="body1" color="error">
+                                                Error loading count of files!
                                             </Typography>
                                         }
                                     >
@@ -184,8 +224,18 @@ const Landing = () => {
                         </Grid>
                     </Grid>
                     <Grid item xs={12} md={12}>
-                        <Paper elevation={3}>
-                            <Button>wiejfeiwf</Button>
+                        <Paper elevation={3} >
+                            <Tabs value={value} onChange={handleChange} textColor="primary"
+                                indicatorColor="primary" aria-label="basic tabs example">
+                                <Tab label="Recent Uploads" {...a11yProps(0)} />
+                                <Tab label="My Uploads" {...a11yProps(1)} />
+                            </Tabs>
+                            <CustomTabPanel value={value} index={0}>
+                                <RecentFiles />
+                            </CustomTabPanel>
+                            <CustomTabPanel value={value} index={1}>
+                                <MyUploads />
+                            </CustomTabPanel>
                         </Paper>
                     </Grid>
 
