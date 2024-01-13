@@ -8,6 +8,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { Provider } from 'react-redux';
+import createStore from './configureStore'
+
 import ErrorPage from "./error-page";
 
 import Landing from './routes/landing';
@@ -36,11 +39,20 @@ const router = createBrowserRouter([
   },
 ]);
 
+const store = createStore();
+
+store.subscribe(() => {
+  const { uploadedFileHashes } = store.getState();
+
+  localStorage.setItem('uploadedFileHashes', JSON.stringify(uploadedFileHashes.value));
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );
 

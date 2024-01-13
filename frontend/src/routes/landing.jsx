@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
+import axios from 'axios'
+
 import { useLoaderData, useNavigate, Await, defer } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+
 
 import RecentFiles from './components/recent-files';
+import MyUploads from './components/my-uploads';
+
+import { appendValue } from '../reducers/uploadedFilesSlice';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -22,9 +29,6 @@ import Skeleton from '@mui/material/Skeleton'
 
 import { Snackbar, Alert, Paper, Stack } from '@mui/material';
 
-
-import axios from 'axios'
-import MyUploads from './components/my-uploads';
 
 const landingLoader = async () => {
     return defer({
@@ -73,6 +77,7 @@ const Landing = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadComplete, setUploadComplete] = useState(false);
     const [value, setValue] = React.useState(0);
+    const dispatch = useDispatch();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -98,7 +103,6 @@ const Landing = () => {
     }
     const handleFileUpload = async (event) => {
         event.preventDefault();
-
         try {
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -109,6 +113,8 @@ const Landing = () => {
                 },
             });
             setUploadComplete(true);
+            dispatch(appendValue(response.data["hash"]));
+
             console.log('API Response:', response.data);
             setTimeout(() => {
                 navigate(`detect/${response.data["hash"]}`)
