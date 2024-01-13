@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios'
+import numeral from 'numeral';
 
 import { useLoaderData, useNavigate, Await, defer } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
@@ -219,9 +220,18 @@ const Landing = () => {
                                         }
                                     >
                                         {(db_file_count) => (
-                                            <Typography variant="h3">
-                                                {db_file_count.data.count} <Typography sx={{ display: "contents" }} variant="body1">files</Typography>
-                                            </Typography>
+                                            <Grid container display="flex" alignItems="flex-end">
+                                                <Grid item xs={8}>
+                                                    <Typography variant="h3" p={0}>
+                                                        {numeral(db_file_count.data.count).format('0a')}
+                                                    </Typography> </Grid>
+                                                <Grid item>
+                                                    <Typography variant="body1" pb={0.5}>
+                                                        files
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+
                                         )}
                                     </Await>
                                 </React.Suspense>

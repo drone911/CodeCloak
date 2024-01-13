@@ -2,7 +2,7 @@ import React from "react";
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, tableCellClasses, styled } from "@mui/material";
 import { selectUploadedFileHashesArray } from '../../reducers/uploadedFilesSlice';
 import { useSelector } from 'react-redux'
-
+import numeral from "numeral";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -43,6 +43,9 @@ const columns = [
 ];
 
 function createData(common_name, sha256, size, detections, code) {
+    size = numeral(size).format("0.0b");
+    detections = numeral(detections).format("0.00a").toUpperCase();
+
     return { common_name, sha256, size, detections, code };
 }
 

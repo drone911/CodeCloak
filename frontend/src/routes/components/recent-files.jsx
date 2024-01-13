@@ -1,6 +1,6 @@
 import React from "react";
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, tableCellClasses, styled } from "@mui/material";
-
+import numeral from "numeral";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -35,12 +35,15 @@ const columns = [
         label: 'Detections',
         minWidth: 5,
         align: 'right',
-        format: (value) => value.toFixed(2),
+        format: (value) => value.toLocaleString('en-US'),
     },
     { id: 'common_name', label: 'Common Name', minWidth: 2 }
 ];
 
 function createData(common_name, sha256, size, detections, code) {
+    size = numeral(size).format("0.0b");
+    detections = numeral(detections).format("0.00a").toUpperCase();
+
     return { common_name, sha256, size, detections, code };
 }
 
