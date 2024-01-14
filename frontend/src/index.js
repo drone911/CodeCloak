@@ -16,7 +16,7 @@ import ErrorPage from "./error-page";
 import Landing from './routes/landing';
 import { landingLoader } from './routes/landing';
 
-import Detect from './routes/detect';
+import Detect, { detectLoader } from './routes/detect';
 
 
 
@@ -33,6 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "detect/:hash",
+        loader: detectLoader,
         element: <Detect />,
       }
     ],

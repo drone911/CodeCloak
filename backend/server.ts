@@ -12,6 +12,9 @@ import * as mcache from 'memory-cache';
 import { model } from 'mongoose';
 
 import { FileModel } from './schemas/FileSchema';
+import { FileVirusTotalModel } from './schemas/VirusTotalMetaDataSchema';
+
+import { getFileInfoFromVirusTotal } from './utility/virustotalAPI';
 
 const app = express();
 
@@ -56,6 +59,30 @@ app.get('/api/file/count', async (req: Request, res: Response) => {
             console.error('Error fetching document count:', error);
             res.sendStatus(500).json({ error: 'Internal Server Error' });
         }
+    }
+})
+
+app.get('/api/file/:hash/virustotal', async (req: Request, res: Response) => {
+    const { hash } = req.params;
+    try {
+        const existingFileModel = await FileModel.findOne({ sha256hash: hash });
+        if (!existingFileModel) {
+            return res.status(404).json({ error: "Not Found" })
+        }
+        const existingMetadata = await FileVirusTotalModel.findOne({ sha256hash: hash });
+        if (existingMetadata) {
+            return res.json(existingMetadata.metadata)
+        }
+        const metadata = await getFileInfoFromVirusTotal(hash);
+        const fileVirusTotalData = { sha256hash: hash, metadata: { names: metadata.names, tags: metadata.tags, reputation: metadata.reputation, typeTags: metadata.type_tags, fetchTime: Date() } };
+        const fileVirusTotalDocument = new FileVirusTotalModel(fileVirusTotalData);
+        await fileVirusTotalDocument.save();
+
+        return res.json(fileVirusTotalData.metadata)
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 

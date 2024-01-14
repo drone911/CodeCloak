@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -32,9 +32,10 @@ const App = () => {
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <CssBaseline>
         <AppBar position="static" color="transparent" elevation={3}>
-          
-            <Toolbar>
-              <div 
+
+          <Toolbar>
+            <Link to="/" rel="noopener noreferrer">
+              <div
                 style={{
                   width: '48px',
                   height: '48px',
@@ -49,18 +50,21 @@ const App = () => {
               >
                 <img src={logo} alt="Logo" style={{ height: '58px' }} />
               </div>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            </Link>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Link to="/" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
                 CatchMeIfYouScan
-              </Typography>
-              {darkMode ? <Brightness4Icon /> : <WbSunnyIcon />}
-              <Switch
-                color='secondary'
-                checked={darkMode}
-                onChange={handleThemeChange}
-                inputProps={{ 'aria-label': 'toggle dark mode' }}
-              />
-            </Toolbar>
-          
+              </Link>
+            </Typography>
+            {darkMode ? <Brightness4Icon /> : <WbSunnyIcon />}
+            <Switch
+              color='secondary'
+              checked={darkMode}
+              onChange={handleThemeChange}
+              inputProps={{ 'aria-label': 'toggle dark mode' }}
+            />
+          </Toolbar>
+
         </AppBar>
         <Outlet />
       </CssBaseline>
