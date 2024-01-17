@@ -11,7 +11,7 @@ import * as mcache from 'memory-cache';
 
 import { model } from 'mongoose';
 
-import { FileModel } from './schemas/FileSchema';
+import { FileModel, IdetectionData } from './schemas/FileSchema';
 import { FileVirusTotalModel } from './schemas/VirusTotalMetaDataSchema';
 
 import { getFileInfoFromVirusTotal } from './utility/virustotalAPI';
@@ -44,7 +44,9 @@ const upload = multer({
     }
 });
 
-const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50
+const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50;
+const MAX_SCAN_COUNT = Number(process.env.NODE_MAX_SCAN_COUNT) || 5;
+const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR_BELOW) || 50;
 
 app.get('/api/file/count', async (req: Request, res: Response) => {
     let files_count = mcache.get("db_file_count")
@@ -105,6 +107,61 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
     }
 });
 
+const scanFileWithClam = async (fileContent: string): Promise<IdetectionData[]> => {
+
+    return [];
+}
+
+interface IdetectionContent extends IdetectionData {
+    content: string
+}
+const getRelaventFileContent = async (fileContent: string, detections: IdetectionData[], character_threshold: number): Promise<IdetectionContent[]> => {
+
+    return [];
+}
+
+const getFileHeader = (fileContent: string, characters: number): string => {
+    return fileContent.substring(0, Math.max(fileContent.length, characters));
+}
+
+app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
+    try {
+        const { hash } = req.params
+        const currentTimestamp = new Date().getTime();
+
+        const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans');
+        if (!fileDocument) {
+            return res.status(404).json({ error: "Not Found" });
+        }
+
+        console.log("MAX SCAN COUNT: %d", MAX_SCAN_COUNT)
+        if (fileDocument.countOfScans >= MAX_SCAN_COUNT) {
+            return res.status(400).json({ error: "Bad Request" })
+        }
+        const fileContent = fs.readFileSync(fileDocument.path, 'utf-8');
+
+        const detections = await scanFileWithClam(fileContent);
+
+        fileDocument.detectionData = detections;
+        fileDocument.countOfScans += 1;
+        await fileDocument.save();
+
+        if (detections) {
+            const detectionsWithData = await getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_ABOVE_OR_BELOW)
+            return res.json([{ "detections": detectionsWithData, "hash": hash, "Scanner": "ClamAV" }])
+        }
+        else {
+            const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
+
+            return res.json([{ "fileHeader": fileHeader, "Scanner": "ClamAV" }])
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 app.get('/files', async (req: Request, res: Response) => {
     try {
@@ -117,7 +174,6 @@ app.get('/files', async (req: Request, res: Response) => {
 
         const files = await FileModel.find().skip(skip).limit(pageSize);
 
-        res.status(200).json(files);
     } catch (error) {
         console.error('Error fetching files:', error);
         res.status(500).json({ error: 'Internal Server Error' });
