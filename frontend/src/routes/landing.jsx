@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios'
 import numeral from 'numeral';
 
-import { useLoaderData, useNavigate, Await, defer } from 'react-router-dom';
+import { useLoaderData, useNavigate, Await, defer, useOutletContext } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 
 
@@ -64,9 +64,11 @@ function a11yProps(index) {
     };
 }
 
+
 export { landingLoader };
 
 const Landing = () => {
+    const [darkMode] = useOutletContext();
     const [showFileSizeErrorSnackbar, setShowFileSizeErrorSnackbar] = useState(false);
     const [showFileUploadErrorSnackbar, setShowFileUploadErrorSnackbar] = useState(false);
     const isSmallScreen = useMediaQuery(lightTheme.breakpoints.down('sm'));
@@ -136,6 +138,7 @@ const Landing = () => {
         setShowFileSizeErrorSnackbar(false);
         setShowFileUploadErrorSnackbar(false);
     }
+
     return (
         <Container sx={{ paddingTop: 4 }}>
             <Grid container spacing={3}>
@@ -182,6 +185,11 @@ const Landing = () => {
                                                 </div>
                                             </Grid>
                                         </Grid>
+                                        {selectedFile && (
+                                            <div>
+                                                <LinearProgress sx={{ transition: 'transform 2s' }} variant="determinate" value={uploadProgress} />
+                                            </div>
+                                        )}
                                         <Button type="submit" disabled={selectedFile === null ? true : false} variant="outlined">
                                             <CloudUploadIcon sx={{ marginRight: 1 }} />
                                             <Typography variant="body1" sx={{ cursor: 'pointer', marginRight: 1 }}>
@@ -189,11 +197,6 @@ const Landing = () => {
                                             </Typography>
                                         </Button>
 
-                                        {selectedFile && (
-                                            <div>
-                                                <LinearProgress sx={{ transition: 'transform 2s' }} variant="determinate" value={uploadProgress} />
-                                            </div>
-                                        )}
                                     </Stack>
 
                                 </form>

@@ -21,7 +21,7 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 const App = () => {
 
   // const [darkMode, setDarkMode] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   const isSmallScreen = useMediaQuery(lightTheme.breakpoints.down('sm'));
 
@@ -66,7 +66,7 @@ const App = () => {
           </Toolbar>
 
         </AppBar>
-        <Outlet />
+        <Outlet context={[darkMode]} />
       </CssBaseline>
     </ThemeProvider>
   );

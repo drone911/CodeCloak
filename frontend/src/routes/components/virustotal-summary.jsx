@@ -1,7 +1,7 @@
 import React from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 
-import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent } from '@mui/material';
+import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent, Chip, List } from '@mui/material';
 import { OpenInNew, Loop } from '@mui/icons-material'
 
 
@@ -101,6 +101,64 @@ const VirusTotalPaperErrorElement = () => {
     );
 }
 
+const VirusTotalPaper = ({ metadata }) => {
+    return (
+        <Box sx={{ maxWidth: 400 }} my={4} mx={3}>
+            TODO: {JSON.stringify(metadata.data)}
+
+            <Stack spacing={1}>
+                <Box>
+                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        Reputation
+                    </Typography>
+
+                </Box>
+                <Box>
+                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        Names
+                    </Typography>
+                    <List>
+                        {metadata.data.names.map((name) => {
+                            return (
+                                <Chip size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                            )
+                        })}
+                    </List>
+
+                </Box>
+                <Box>
+
+                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        Associated Tags
+                    </Typography>
+                    <List>
+                        {metadata.data.tags.map((name) => {
+                            return (
+                                <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                            )
+                        })}
+                    </List>
+
+                </Box>
+                <Box>
+
+                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        Detected File Types
+                    </Typography>
+                    <List>
+                        {metadata.data.typeTags.map((name) => {
+                            return (
+                                <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                            )
+                        })}
+                    </List>
+
+                </Box>
+
+            </Stack>
+        </Box>
+    );
+}
 const VirusTotalSummary = () => {
     const { virusTotalMetadata } = useLoaderData();
 
@@ -120,9 +178,7 @@ const VirusTotalSummary = () => {
                         resolve={virusTotalMetadata}
                         errorElement={<VirusTotalPaperErrorElement />}
                         children={(metadata) => (
-                            <Box>
-                                TODO: {JSON.stringify(metadata.data)}
-                            </Box>
+                            <VirusTotalPaper metadata={metadata} />
                         )}
                     />
                 </React.Suspense>
