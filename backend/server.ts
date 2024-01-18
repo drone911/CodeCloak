@@ -69,17 +69,19 @@ app.get('/api/file/:hash/virustotal', async (req: Request, res: Response) => {
     try {
         const existingFileModel = await FileModel.findOne({ sha256hash: hash });
         if (!existingFileModel) {
+            console.debug(`[/api/file/:hash/virustotal] Requested hash: ${hash} Not found.`)
             return res.status(404).json({ error: "Not Found" })
         }
-        const existingMetadata = await FileVirusTotalModel.findOne({ sha256hash: hash });
+        const existingMetadata = await FileVirusTotalModel.findOne({ sha256hash: hash }).select({ "metadata._id": 0 });
         if (existingMetadata) {
+            console.debug(`[/api/file/:hash/virustotal] Returning existing metadata for hash: ${hash}.`)
             return res.json(existingMetadata.metadata)
         }
         const metadata = await getFileInfoFromVirusTotal(hash);
         const fileVirusTotalData = { sha256hash: hash, metadata: { names: metadata.names, tags: metadata.tags, reputation: metadata.reputation, typeTags: metadata.type_tags, fetchTime: Date() } };
         const fileVirusTotalDocument = new FileVirusTotalModel(fileVirusTotalData);
         await fileVirusTotalDocument.save();
-
+        console.debug(`[/api/file/:hash/virustotal] Requested and Created virustotal record for hash: ${hash}.`)
         return res.json(fileVirusTotalData.metadata)
 
     } catch (error) {
@@ -96,8 +98,14 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
 
         const hash = crypto.createHash('sha256').update(fileContent).digest('hex');
 
+        const existingFileDocument = await FileModel.findOne({ sha256hash: hash }, "sha256hash storedName");
+        if (existingFileDocument) {
+            console.debug(`[/api/upload] Returning existing File: ${hash}.`);
+            return res.json({ filename: existingFileDocument.storedName, hash: existingFileDocument.sha256hash })
+        }
         const fileDocument = new FileModel({ storedName: filename, path: filePath, sha256hash: hash, size: req.file?.size })
         await fileDocument.save()
+        console.debug(`[/api/upload] File created: ${hash}.`);
 
         res.json({ filename, hash });
 
