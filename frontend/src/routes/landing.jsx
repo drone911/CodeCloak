@@ -221,7 +221,7 @@ const Landing = () => {
                                     >
                                         {(db_file_count) => (
                                             <Grid container display="flex" alignItems="flex-end">
-                                                <Grid item xs={8}>
+                                                <Grid item xs={6}>
                                                     <Typography variant="h3" p={0}>
                                                         {numeral(db_file_count.data.count).format('0a')}
                                                     </Typography> </Grid>
