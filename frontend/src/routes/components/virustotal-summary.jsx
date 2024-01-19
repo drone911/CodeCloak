@@ -4,6 +4,31 @@ import { Await, useLoaderData } from 'react-router-dom';
 import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent, Chip, List } from '@mui/material';
 import { OpenInNew, Loop } from '@mui/icons-material'
 
+const reputationMap = {
+    "[50, 100]": {
+        "reputationText": "Benign & Trusted",
+        "reputationColor": "green",
+        "reputationBackgroundColor": "lightgreen"
+    },
+    "[0, 50)": {
+        "reputationText": "Benign",
+        "reputationColor": "green",
+        "reputationBackgroundColor": "lightgreen",
+    },
+    "(-50,0)": {
+        "reputationText": "Malicious",
+        "reputationColor": "red",
+        "reputationBackgroundColor": "#FFD6D6",
+        // Light Red
+    },
+    "[-100, -50]": {
+        "reputationText": "Highly Malicious",
+        "reputationColor": "red",
+        "reputationBackgroundColor": "#FFD6D6"
+        // Light Red
+    }
+};
+
 
 const steps = [
     {
@@ -102,61 +127,93 @@ const VirusTotalPaperErrorElement = () => {
 }
 
 const VirusTotalPaper = ({ metadata }) => {
+    const reputation = Number(metadata.data.reputation);
+    let reputationText, reputationColor, reputationBackgroundColor;
+
+    if (reputation <= -50) {
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[-100, -50]"]);
+    } else if (reputation < 0) {
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["(-50,0)"]);
+    } else if (reputation < 50) {
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[0, 50)"]);
+    } else {
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[50, 100]"]);
+    }
+
+
     return (
         <Box sx={{ maxWidth: 400 }} my={4} mx={3}>
             TODO: {JSON.stringify(metadata.data)}
 
             <Stack spacing={1}>
-                <Box>
+
+                <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "600" }}>
                         Reputation
                     </Typography>
-
+                    <Button px={3} py={2} variant="contained" sx={{
+                        '&:hover': {
+                            backgroundColor: reputationBackgroundColor,
+                            boxShadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
+                            cursor: "default"
+                        }, color: reputationColor, backgroundColor: reputationBackgroundColor
+                    }}>
+                        <Typography variant='h6'>
+                            {reputationText}
+                        </Typography>
+                    </Button>
                 </Box>
-                <Box>
-                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
-                        Names
-                    </Typography>
-                    <List>
-                        {metadata.data.names.map((name) => {
-                            return (
-                                <Chip size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
-                            )
-                        })}
-                    </List>
+                {
+                    metadata.data.names && <Box>
+                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                            Names
+                        </Typography>
+                        <List>
+                            {metadata.data.names.map((name) => {
+                                return (
+                                    <Chip size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                )
+                            })}
+                        </List>
 
-                </Box>
-                <Box>
+                    </Box>
+                }
+                {
+                    metadata.data.tags &&
+                    <Box>
 
-                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
-                        Associated Tags
-                    </Typography>
-                    <List>
-                        {metadata.data.tags.map((name) => {
-                            return (
-                                <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
-                            )
-                        })}
-                    </List>
+                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                            Associated Tags
+                        </Typography>
+                        <List>
+                            {metadata.data.tags.map((name) => {
+                                return (
+                                    <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                )
+                            })}
+                        </List>
 
-                </Box>
-                <Box>
+                    </Box>
+                }
+                {
+                    metadata.data.typeTags &&
+                    <Box>
 
-                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
-                        Detected File Types
-                    </Typography>
-                    <List>
-                        {metadata.data.typeTags.map((name) => {
-                            return (
-                                <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
-                            )
-                        })}
-                    </List>
+                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                            Detected File Types
+                        </Typography>
+                        <List>
+                            {metadata.data.typeTags.map((name) => {
+                                return (
+                                    <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                )
+                            })}
+                        </List>
 
-                </Box>
-
-            </Stack>
-        </Box>
+                    </Box>
+                }
+            </Stack >
+        </Box >
     );
 }
 const VirusTotalSummary = () => {
