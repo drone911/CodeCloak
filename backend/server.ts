@@ -94,7 +94,6 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
     try {
         const { path: filePath, filename } = req.file as Express.Multer.File;
         const fileContent = fs.readFileSync(filePath, 'utf-8');
-        const currentTimestamp = new Date().getTime();
 
         const hash = crypto.createHash('sha256').update(fileContent).digest('hex');
 
@@ -121,7 +120,8 @@ const scanFileWithClam = async (fileContent: string): Promise<IdetectionData[]> 
 }
 
 interface IdetectionContent extends IdetectionData {
-    content: string
+    content: string,
+    offset: number
 }
 const getRelaventFileContent = async (fileContent: string, detections: IdetectionData[], character_threshold: number): Promise<IdetectionContent[]> => {
 
@@ -156,12 +156,12 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
 
         if (detections) {
             const detectionsWithData = await getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_ABOVE_OR_BELOW)
-            return res.json([{ "detections": detectionsWithData, "hash": hash, "Scanner": "ClamAV" }])
+            return res.json([{ "detections": detectionsWithData, "hash": hash, "Scanner": "ClamAV", "ScannerLogo": "https://www.clamav.net/assets/clamav-trademark.png" }])
         }
         else {
             const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
 
-            return res.json([{ "fileHeader": fileHeader, "Scanner": "ClamAV" }])
+            return res.json([{ "fileHeader": fileHeader, "Scanner": "ClamAV", "ScannerLogo": "https://www.clamav.net/assets/clamav-trademark.png"}])
         }
 
     } catch (error) {

@@ -42,6 +42,27 @@ const steps = [
     },
 ];
 
+const calculateRelativeDate = (date) => {
+    const now = new Date();
+    const diffInMilliseconds = now - new Date(date);
+    const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+    if (diffInSeconds < 60) {
+        return rtf.format(-diffInSeconds, 'second');
+    } else if (diffInSeconds < 3600) {
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        return rtf.format(-diffInMinutes, 'minute');
+    } else if (diffInSeconds < 86400) {
+        const diffInHours = Math.floor(diffInSeconds / 3600);
+        return rtf.format(-diffInHours, 'hour');
+    } else {
+        const diffInDays = Math.floor(diffInSeconds / 86400);
+        return rtf.format(-diffInDays, 'day');
+    }
+};
+
 const VirusTotalPaperErrorElement = () => {
     const virusTotalUploadLink = "https://www.virustotal.com/gui/home/upload"
     const [activeStep, setActiveStep] = React.useState(0);
@@ -126,7 +147,7 @@ const VirusTotalPaperErrorElement = () => {
     );
 }
 
-const VirusTotalPaper = ({ metadata }) => {
+const VirusTotalPaper = ({ metadata, theme }) => {
     const reputation = Number(metadata.data.reputation);
     let reputationText, reputationColor, reputationBackgroundColor;
 
@@ -143,8 +164,6 @@ const VirusTotalPaper = ({ metadata }) => {
 
     return (
         <Box sx={{ maxWidth: 400 }} my={4} mx={3}>
-            TODO: {JSON.stringify(metadata.data)}
-
             <Stack spacing={1}>
 
                 <Box display="flex" flexDirection="column">
@@ -212,16 +231,31 @@ const VirusTotalPaper = ({ metadata }) => {
 
                     </Box>
                 }
+                {
+                    metadata.data.fetchTime &&
+                    <Box>
+                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                            Fetched
+                        </Typography>
+                        <List>
+                            <Typography color={theme.palette.primary.light}>
+                                { calculateRelativeDate(metadata.data.fetchTime)}
+                            </Typography>
+
+                        </List>
+
+                    </Box>
+                }
             </Stack >
         </Box >
     );
 }
 const VirusTotalSummary = () => {
     const { virusTotalMetadata } = useLoaderData();
-
+    const theme = useTheme();
     return (
         <React.Fragment>
-            <Box display="flex" alignItems="center" justifyContent="center">
+            <Box display="flex" alignItems="center" justifyContent="center" marginTop={1} >
                 <svg viewBox="0 0 100 100" style={{ display: "inline", fill: "#0b4dda", width: "2rem", height: "2rem", marginRight: "0.5rem" }}>
                     <path d="M45.292 44.5 0 89h100V0H0l45.292 44.5zM90 80H22l35.987-35.2L22 9h68v71z"></path>
                 </svg>
@@ -235,7 +269,7 @@ const VirusTotalSummary = () => {
                         resolve={virusTotalMetadata}
                         errorElement={<VirusTotalPaperErrorElement />}
                         children={(metadata) => (
-                            <VirusTotalPaper metadata={metadata} />
+                            <VirusTotalPaper metadata={metadata} theme={theme} />
                         )}
                     />
                 </React.Suspense>
