@@ -137,7 +137,7 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
         const { hash } = req.params
         const currentTimestamp = new Date().getTime();
 
-        const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans');
+        const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size');
         if (!fileDocument) {
             return res.status(404).json({ error: "Not Found" });
         }
@@ -156,12 +156,12 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
 
         if (detections) {
             const detectionsWithData = await getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_ABOVE_OR_BELOW)
-            return res.json([{ "detections": detectionsWithData, "hash": hash, "Scanner": "ClamAV", "ScannerLogo": "https://www.clamav.net/assets/clamav-trademark.png" }])
+            return res.json([{ "detections": detectionsWithData, "hash": hash, "size": fileDocument.size, "scanner": "ClamAV", "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
         else {
             const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
 
-            return res.json([{ "fileHeader": fileHeader, "Scanner": "ClamAV", "ScannerLogo": "https://www.clamav.net/assets/clamav-trademark.png"}])
+            return res.json([{ "fileHeader": fileHeader, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
 
     } catch (error) {

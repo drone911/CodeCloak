@@ -3,6 +3,17 @@
   --ds-background-green-subtle: #e3fcef;
   --ds-background-red-light: #ffbdad;
   --ds-lighter-grey: #f4f5f7;
+  
+  --primary-color: #673ab7;
+  --primary-dark: #482880;
+  --primary-light: #8561c5;
+  --secondary-color: #2196f3;
+  --secondary-dark: #1769aa;
+  --secondary-light: #4dabf5;
+  --primary-text-dark-600: rgba(34, 34, 61, 0.899);
+
+  --virustotal-blue: #0b4dda;
+
 }
 
 body {
