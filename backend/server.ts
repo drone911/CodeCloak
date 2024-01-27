@@ -8,6 +8,7 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as mcache from 'memory-cache';
+import * as stream from 'stream';
 
 import { model } from 'mongoose';
 
@@ -15,12 +16,20 @@ import { FileModel, IdetectionData } from './schemas/FileSchema';
 import { FileVirusTotalModel } from './schemas/VirusTotalMetaDataSchema';
 
 import { getFileInfoFromVirusTotal } from './utility/virustotalAPI';
+import * as NodeClam from 'clamscan';
 
 const app = express();
 
 const corsOptions = {
     origin: process.env.REACT_CORS_ORIGIN,
 };
+
+const clamscan = new NodeClam();
+
+clamscan.init({
+    scanLog: process.env.NODE_CLAM_LOG_DIRECTORY || '/ClamAV/log'
+
+})
 
 app.use(cors());
 app.use(Helmet());
@@ -114,7 +123,29 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
     }
 });
 
-const scanFileWithClam = async (fileContent: string): Promise<IdetectionData[]> => {
+
+
+const scanFileWithClamAV = async (fileContent: string): Promise<IdetectionData[]> => {
+
+    const bufferStream = new stream.Readable();
+    bufferStream.push(fileContent);
+    bufferStream.push(null); // Signals the end of the stream
+    try {
+        const result = await clamscan.scanStream(bufferStream)
+        if (!result.isInfected) {
+            console.log(result.viruses);
+            console.log('Buffer is clean.');
+        } else {
+            console.log('Buffer is infected!');
+            console.log('Virus details:', result);
+        }
+
+    }
+    catch (err) {
+        console.error('Error during scan:', err);
+
+    }
+
 
     return [];
 }
@@ -148,7 +179,7 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
         }
         const fileContent = fs.readFileSync(fileDocument.path, 'utf-8');
 
-        const detections = await scanFileWithClam(fileContent);
+        const detections = await scanFileWithClamAV(fileContent);
 
         fileDocument.detectionData = detections;
         fileDocument.countOfScans += 1;
