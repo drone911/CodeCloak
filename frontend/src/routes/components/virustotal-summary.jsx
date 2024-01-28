@@ -32,13 +32,13 @@ const reputationMap = {
 
 const steps = [
     {
-        label: 'Upload File On Virustotal',
-        description: `First we upload the file on VirusTotal.`,
+        label: 'Upload on Virustotal',
+        description: ``,
     },
     {
-        label: 'Refresh Content',
+        label: 'Refresh Page',
         description:
-            'Next we refresh the page.',
+            '',
     },
 ];
 
@@ -102,14 +102,14 @@ const VirusTotalPaperErrorElement = () => {
                             {activeStep == 0 && (
                                 <Link href={virusTotalUploadLink} underline='none' rel="noopener, noreferrer" target="_blank">
                                     <Button variant="contained" size="medium" endIcon={<OpenInNew />}>
-                                        Upload on Virustotal
+                                        Virustotal
                                     </Button>
                                 </Link>
 
                             )}
                             {activeStep == 1 && (
                                 <Button variant="contained" onClick={() => { window.location.reload() }} size="medium" color="success" endIcon={<Loop />}>
-                                    Reload Page
+                                    Reload
                                 </Button>
 
                             )}
