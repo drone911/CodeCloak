@@ -158,15 +158,11 @@ const ShowDetections = ({ scanAPIResponse, isSmallScreen }) => {
                                     <Stack spacing={2}>
                                         <Box
                                             style={{
-                                                padding: `0 ${detection.offset}px`,
                                                 backgroundColor: 'white',
                                             }}
                                         >
                                             <span style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                                {detection.content.substring(
-                                                    0,
-                                                    detection.offset - 1
-                                                )}
+                                                {detection.paddedContentBefore}
                                             </span>
                                             <Tooltip
                                                 title={`Start Index: ${detection.startIndex}, End Index: ${detection.endIndex}`}
@@ -175,21 +171,15 @@ const ShowDetections = ({ scanAPIResponse, isSmallScreen }) => {
                                                 <HoverSpan style={{
                                                     backgroundColor: 'var(--ds-background-red-light)'
                                                 }}>
-                                                    {detection.content.substring(
-                                                        detection.offset,
-                                                        detection.content.length - detection.offset
-                                                    )}
+                                                    {detection.maliciousContent}
                                                 </HoverSpan>
                                             </Tooltip>
                                             <span style={{
                                                 backgroundColor: 'var(--ds-background-green-subtle)'
                                             }}>
-                                                {detection.content.substring(
-                                                    detection.content.length - detection.offset + 1
-                                                )}
+                                                {detection.paddedContentAfter}
                                             </span>
                                         </Box>
-                                        {index < detections.length - 1}
                                     </Stack>
                                 </Grid>
                             </React.Fragment>

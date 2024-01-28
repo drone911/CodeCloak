@@ -13,11 +13,9 @@ import createStore from './configureStore'
 
 import ErrorPage from "./error-page";
 
-import Landing from './routes/landing';
-import { landingLoader } from './routes/landing';
-
+import Landing, { landingLoader } from './routes/landing';
 import Detect, { detectLoader } from './routes/detect';
-
+import Scanning from './routes/scanning';
 
 
 const router = createBrowserRouter([
@@ -35,6 +33,10 @@ const router = createBrowserRouter([
         path: "detect/:hash",
         loader: detectLoader,
         element: <Detect />,
+      },
+      {
+        path: "scan/:hash",
+        element: <Scanning />
       }
     ],
   },

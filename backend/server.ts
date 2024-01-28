@@ -8,15 +8,16 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as mcache from 'memory-cache';
-import * as stream from 'stream';
 
 import { model } from 'mongoose';
 
-import { FileModel, IdetectionData } from './schemas/FileSchema';
+import { FileModel } from './schemas/FileSchema';
 import { FileVirusTotalModel } from './schemas/VirusTotalMetaDataSchema';
 
 import { getFileInfoFromVirusTotal } from './utility/virustotalAPI';
-import * as NodeClam from 'clamscan';
+import { scanFileWithClamAV } from './utility/clamAVScan';
+import { getFileHeader, getRelaventFileContent } from './utility/fileContent';
+
 
 const app = express();
 
@@ -24,14 +25,7 @@ const corsOptions = {
     origin: process.env.REACT_CORS_ORIGIN,
 };
 
-const clamscan = new NodeClam();
-
-clamscan.init({
-    scanLog: process.env.NODE_CLAM_LOG_DIRECTORY || '/ClamAV/log'
-
-})
-
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(Helmet());
 
 app.get('/test', (req: Request, res: Response) => {
@@ -56,6 +50,9 @@ const upload = multer({
 const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50;
 const MAX_SCAN_COUNT = Number(process.env.NODE_MAX_SCAN_COUNT) || 5;
 const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR_BELOW) || 50;
+const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 5000;
+const FILE_COUNT_CACHE_SECONDS = Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10
+const GET_SCAN_CACHE_SECONDS = Number(process.env.NODE_GET_SCAN_CACHE_SECONDS) || 500
 
 app.get('/api/file/count', async (req: Request, res: Response) => {
     let files_count = mcache.get("db_file_count")
@@ -64,7 +61,7 @@ app.get('/api/file/count', async (req: Request, res: Response) => {
     } else {
         try {
             const files_count = await FileModel.countDocuments({}).exec();
-            mcache.put("db_file_count", files_count, (Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10) * 1000)
+            mcache.put("db_file_count", files_count, FILE_COUNT_CACHE_SECONDS * 1000)
             res.status(200).json({ "count": files_count })
         } catch (error) {
             console.error('Error fetching document count:', error);
@@ -93,8 +90,11 @@ app.get('/api/file/:hash/virustotal', async (req: Request, res: Response) => {
         console.debug(`[/api/file/:hash/virustotal] Requested and Created virustotal record for hash: ${hash}.`)
         return res.json(fileVirusTotalData.metadata)
 
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        if (error.response && error.response.status === 404) {
+            return res.status(404).json({ error: "Not Found" })
+        }
+        console.error(error);   
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
@@ -109,7 +109,7 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
         const existingFileDocument = await FileModel.findOne({ sha256hash: hash }, "sha256hash storedName");
         if (existingFileDocument) {
             console.debug(`[/api/upload] Returning existing File: ${hash}.`);
-            return res.json({ filename: existingFileDocument.storedName, hash: existingFileDocument.sha256hash })
+            return res.json({ filename: existingFileDocument.storedName, hash: existingFileDocument.sha256hash, exists: true })
         }
         const fileDocument = new FileModel({ storedName: filename, path: filePath, sha256hash: hash, size: req.file?.size })
         await fileDocument.save()
@@ -124,75 +124,68 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
 });
 
 
-
-const scanFileWithClamAV = async (fileContent: string): Promise<IdetectionData[]> => {
-
-    const bufferStream = new stream.Readable();
-    bufferStream.push(fileContent);
-    bufferStream.push(null); // Signals the end of the stream
-    try {
-        const result = await clamscan.scanStream(bufferStream)
-        if (!result.isInfected) {
-            console.log(result.viruses);
-            console.log('Buffer is clean.');
-        } else {
-            console.log('Buffer is infected!');
-            console.log('Virus details:', result);
-        }
-
-    }
-    catch (err) {
-        console.error('Error during scan:', err);
-
-    }
-
-
-    return [];
-}
-
-interface IdetectionContent extends IdetectionData {
-    content: string,
-    offset: number
-}
-const getRelaventFileContent = async (fileContent: string, detections: IdetectionData[], character_threshold: number): Promise<IdetectionContent[]> => {
-
-    return [];
-}
-
-const getFileHeader = (fileContent: string, characters: number): string => {
-    return fileContent.substring(0, Math.max(fileContent.length, characters));
-}
-
 app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
     try {
         const { hash } = req.params
-        const currentTimestamp = new Date().getTime();
 
         const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size');
         if (!fileDocument) {
             return res.status(404).json({ error: "Not Found" });
         }
 
-        console.log("MAX SCAN COUNT: %d", MAX_SCAN_COUNT)
         if (fileDocument.countOfScans >= MAX_SCAN_COUNT) {
             return res.status(400).json({ error: "Bad Request" })
         }
-        const fileContent = fs.readFileSync(fileDocument.path, 'utf-8');
+        const fileBuffer = fs.readFileSync(fileDocument.path);
 
-        const detections = await scanFileWithClamAV(fileContent);
+        const detections = await scanFileWithClamAV(fileBuffer);
 
         fileDocument.detectionData = detections;
         fileDocument.countOfScans += 1;
         await fileDocument.save();
 
-        if (detections) {
-            const detectionsWithData = await getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_ABOVE_OR_BELOW)
+        const fileContent = fileBuffer.toString('utf-8');
+        if (detections.length > 0) {
+            const detectionsWithData = getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_MALICIOUS, MAX_CHARACTERS_ABOVE_OR_BELOW)
             return res.json([{ "detections": detectionsWithData, "hash": hash, "size": fileDocument.size, "scanner": "ClamAV", "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
         else {
             const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
-
             return res.json([{ "fileHeader": fileHeader, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
+    try {
+        const { hash } = req.params
+        const cachedResponse = mcache.get(`scan/${hash}`)
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size detectionData');
+        if (!fileDocument) {
+            return res.status(404).json({ error: "Not Found" });
+        }
+        const fileBuffer = fs.readFileSync(fileDocument.path);
+        const detections = fileDocument.detectionData;
+
+        const fileContent = fileBuffer.toString('utf-8')
+        if (detections.length > 0) {
+            const detectionsWithData = getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_MALICIOUS, MAX_CHARACTERS_ABOVE_OR_BELOW)
+            const result = [{ "detections": detectionsWithData, "hash": hash, "size": fileDocument.size, "scanner": "ClamAV", "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }];
+            mcache.put(`scan/${hash}`, result, GET_SCAN_CACHE_SECONDS * 1000);
+            return res.json(result);
+        }
+        else {
+            const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
+            const result = [{ "fileHeader": fileHeader, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }];
+            mcache.put(`scan/${hash}`, result, GET_SCAN_CACHE_SECONDS * 1000);
+            return res.json(result);
         }
 
     } catch (error) {
@@ -220,7 +213,7 @@ app.get('/files', async (req: Request, res: Response) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error(err);
+    // console.error(err);
     res.status(500).send("An unexpected error occurred.");
 });
 

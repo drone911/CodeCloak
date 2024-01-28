@@ -100,7 +100,7 @@ const VirusTotalPaperErrorElement = () => {
                         <StepContent>
                             <Typography mb={2}>{step.description}</Typography>
                             {activeStep == 0 && (
-                                <Link href={virusTotalUploadLink} underline='none' rel="noopener" target="_blank" rel="noreferrer">
+                                <Link href={virusTotalUploadLink} underline='none' rel="noopener, noreferrer" target="_blank">
                                     <Button variant="contained" size="medium" endIcon={<OpenInNew />}>
                                         Upload on Virustotal
                                     </Button>
@@ -167,7 +167,7 @@ const VirusTotalPaper = ({ metadata, theme }) => {
             <Stack spacing={1}>
 
                 <Box display="flex" flexDirection="column">
-                    <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                         Reputation
                     </Typography>
                     <Button px={3} py={2} variant="contained" sx={{
@@ -184,13 +184,13 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                 </Box>
                 {
                     metadata.data.names && <Box>
-                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Names
                         </Typography>
                         <List>
-                            {metadata.data.names.map((name) => {
+                            {metadata.data.names.map((name, index) => {
                                 return (
-                                    <Chip size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <Chip key={index} size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
                                 )
                             })}
                         </List>
@@ -201,13 +201,13 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                     metadata.data.tags &&
                     <Box>
 
-                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Associated Tags
                         </Typography>
                         <List>
-                            {metadata.data.tags.map((name) => {
+                            {metadata.data.tags.map((name, index) => {
                                 return (
-                                    <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <Chip key={index} size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
                                 )
                             })}
                         </List>
@@ -218,13 +218,13 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                     metadata.data.typeTags &&
                     <Box>
 
-                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Detected File Types
                         </Typography>
                         <List>
-                            {metadata.data.typeTags.map((name) => {
+                            {metadata.data.typeTags.map((name, index) => {
                                 return (
-                                    <Chip size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <Chip key={index} size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
                                 )
                             })}
                         </List>
@@ -234,12 +234,12 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                 {
                     metadata.data.fetchTime &&
                     <Box>
-                        <Typography variant="body2" sx={{ fontWeight: "600" }}>
+                        <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Fetched
                         </Typography>
                         <List>
-                            <Typography color={theme.palette.primary.light}>
-                                { calculateRelativeDate(metadata.data.fetchTime)}
+                            <Typography sx = {{color: "var(--primary-light)"}}>
+                                {calculateRelativeDate(metadata.data.fetchTime)}
                             </Typography>
 
                         </List>
@@ -252,14 +252,13 @@ const VirusTotalPaper = ({ metadata, theme }) => {
 }
 const VirusTotalSummary = () => {
     const { virusTotalMetadata } = useLoaderData();
-    const theme = useTheme();
     return (
         <React.Fragment>
             <Box display="flex" alignItems="center" justifyContent="center" marginTop={1} >
-                <svg viewBox="0 0 100 100" style={{ display: "inline", fill: "#0b4dda", width: "2rem", height: "2rem", marginRight: "0.5rem" }}>
+                <svg viewBox="0 0 100 100" style={{ display: "inline", fill: "var(--virustotal-blue)", width: "2rem", height: "2rem", marginRight: "0.5rem" }}>
                     <path d="M45.292 44.5 0 89h100V0H0l45.292 44.5zM90 80H22l35.987-35.2L22 9h68v71z"></path>
                 </svg>
-                <Typography variant="h6" sx={{ display: "inline", color: "#0b4dda" }}>
+                <Typography variant="h6" sx={{ display: "inline", color: "var(--virustotal-blue)" }}>
                     VIRUSTOTAL SUMMARY
                 </Typography>
             </Box>
@@ -269,7 +268,7 @@ const VirusTotalSummary = () => {
                         resolve={virusTotalMetadata}
                         errorElement={<VirusTotalPaperErrorElement />}
                         children={(metadata) => (
-                            <VirusTotalPaper metadata={metadata} theme={theme} />
+                            <VirusTotalPaper metadata={metadata} />
                         )}
                     />
                 </React.Suspense>

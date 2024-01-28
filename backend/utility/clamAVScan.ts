@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
 import { IdetectionData } from "../schemas/FileSchema"
+
 import * as stream from 'stream';
 
 import * as NodeClam from 'clamscan';
@@ -8,24 +8,43 @@ const clamscan = new NodeClam();
 
 clamscan.init({
     clamdscan: {
-        port: 3310,
+        port: Number(process.env.NODE_CLAM_PORT) || 3310,
         host: "localhost"
     },
     scanLog: process.env.NODE_CLAM_LOG_DIRECTORY || '/ClamAV/log'
-
 })
-
-interface IdetectionContent extends IdetectionData {
-    content?: string,
-    offset: number
-}
-
 
 const scanBufferWithClamAV = async (content: Buffer) => {
     const bufferStream = new stream.Readable();
     bufferStream.push(content);
     bufferStream.push(null);
     return await clamscan.scanStream(bufferStream);
+}
+
+async function scanFileWithClamAVUtil(fileContent: Buffer, start: number, end: number, detections: IdetectionData[]) {
+    if (start >= end) {
+        return
+    }
+
+    const mid: number = start + Math.floor((end - start) / 2);
+
+    const leftResult = await scanBufferWithClamAV(fileContent.subarray(start, mid));
+    const rightResult = await scanBufferWithClamAV(fileContent.subarray(mid + 1, end));
+
+    if (leftResult.isInfected && rightResult.isInfected) {
+        scanFileWithClamAVUtil(fileContent, start, mid, detections);
+        scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
+
+    } else if (leftResult.isInfected && !rightResult.isInfected) {
+        scanFileWithClamAVUtil(fileContent, start, mid, detections);
+
+    }
+    else if (!leftResult.isInfected && rightResult.isInfected) {
+        scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
+
+    } else {
+        detections.push({ startIndex: start, endIndex: end })
+    }
 }
 
 const scanFileWithClamAV = async (fileContent: Buffer): Promise<IdetectionData[]> => {
@@ -35,14 +54,11 @@ const scanFileWithClamAV = async (fileContent: Buffer): Promise<IdetectionData[]
 
     const detections: IdetectionData[] = [];
     const fullScanResult = await scanBufferWithClamAV(fileContent);
-    if(!fullScanResult.isInfected) {
+    if (!fullScanResult.isInfected) {
         return detections;
     }
-
-    return [];
+    scanFileWithClamAVUtil(fileContent, start, end, detections);
+    return detections;
 }
 
-const filename = "";
-const filecontent = readFileSync(filename);
-
-scanFileWithClamAV(filecontent);
+export { scanFileWithClamAV }

@@ -120,7 +120,11 @@ const Landing = () => {
 
             console.log('API Response:', response.data);
             setTimeout(() => {
-                navigate(`detect/${response.data["hash"]}`)
+                if(response.data.exists) {
+                    navigate(`detect/${response.data["hash"]}`)
+                } else{
+                    navigate(`scan/${response.data["hash"]}`)
+                }
             }, 2000)
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -170,7 +174,7 @@ const Landing = () => {
                                         <Grid container spacing={1} alignItems="center">
                                             <Grid item xs={6}>
                                                 <input type="file" id="file-upload" onChange={onFileChange} style={{ display: 'none', zIndex: 1 }} />
-                                                <Button variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "normal" }} onClick={onSelectFileClicked} htmlFor="file-upload" sx={{ zIndex: 0 }}>
+                                                <Button variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "normal" }} onClick={onSelectFileClicked} htmlFor="file-upload">
                                                     <LibraryAddIcon sx={{ marginRight: 1 }} />
                                                     <Typography variant="body2" sx={{ cursor: 'pointer', zIndex: 2, position: 'relative' }}>
                                                         Select File
