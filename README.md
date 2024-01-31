@@ -12,3 +12,8 @@ This method is not widely used as [YARA](https://www.malwarebytes.com/blog/news/
 <p align="center">
   <img src="https://github.com/drone911/CatchMeIfYouScan/blob/main/images/Landing-Page.PNG" alt="Landing Page Desktop View">
 </p>
+2. Detections:
+<br/>
+<p align="center">
+  <img src="https://github.com/drone911/CatchMeIfYouScan/blob/main/images/Detections-Page.PNG" alt="Detections Page Desktop View">
+</p>
