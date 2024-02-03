@@ -258,8 +258,8 @@ const VirusTotalSummary = () => {
                 <svg viewBox="0 0 100 100" style={{ display: "inline", fill: "var(--virustotal-blue)", width: "2rem", height: "2rem", marginRight: "0.5rem" }}>
                     <path d="M45.292 44.5 0 89h100V0H0l45.292 44.5zM90 80H22l35.987-35.2L22 9h68v71z"></path>
                 </svg>
-                <Typography variant="h6" sx={{ display: "inline", color: "var(--virustotal-blue)" }}>
-                    VIRUSTOTAL SUMMARY
+                <Typography variant="h5" sx={{ display: "inline", color: "var(--virustotal-blue)", fontWeight: "700" }}>
+                    Virustotal Summary
                 </Typography>
             </Box>
             <Box>
