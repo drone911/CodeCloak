@@ -26,7 +26,7 @@ const getRelaventFileContent = (fileContent: string, detections: IdetectionData[
 }
 
 const getFileHeader = (fileContent: string, characters: number): string => {
-    return fileContent.substring(0, Math.max(fileContent.length, characters));
+    return fileContent.substring(0, Math.min(fileContent.length, characters));
 }
 
 export { getRelaventFileContent, getFileHeader };

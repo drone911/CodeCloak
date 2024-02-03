@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { lightTheme, darkTheme } from '../theme';
@@ -22,14 +22,15 @@ const App = () => {
 
   // const [darkMode, setDarkMode] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   const [darkMode, setDarkMode] = useState(false);
-
-  const isSmallScreen = useMediaQuery(lightTheme.breakpoints.down('sm'));
-
+  let lightThemePadded = createTheme(lightTheme)
+  let darkThemePadded = createTheme(darkTheme);
+  const theme = darkMode ? darkThemePadded : lightThemePadded;
+  const isSmallScreen = useMediaQuery(lightThemePadded.breakpoints.down('sm'));
   const handleThemeChange = () => {
     setDarkMode(!darkMode);
   };
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline>
         <AppBar position="static" color="transparent" elevation={3}>
 

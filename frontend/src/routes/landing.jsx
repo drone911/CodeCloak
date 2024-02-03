@@ -25,10 +25,10 @@ import Box from '@mui/material/Box';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { lightTheme } from '../theme';
-import Skeleton from '@mui/material/Skeleton'
+import Skeleton from '@mui/material/Skeleton';
 
-import { Snackbar, Alert, Paper, Stack } from '@mui/material';
+
+import { Snackbar, Alert, Paper, Stack, useTheme} from '@mui/material';
 
 
 const landingLoader = async () => {
@@ -71,7 +71,8 @@ const Landing = () => {
     const [darkMode] = useOutletContext();
     const [showFileSizeErrorSnackbar, setShowFileSizeErrorSnackbar] = useState(false);
     const [showFileUploadErrorSnackbar, setShowFileUploadErrorSnackbar] = useState(false);
-    const isSmallScreen = useMediaQuery(lightTheme.breakpoints.down('sm'));
+    const isSmallScreen = useMediaQuery(useTheme().breakpoints.down('sm'));
+    
     const navigate = useNavigate();
     const dataFromLoader = useLoaderData();
 
@@ -118,7 +119,6 @@ const Landing = () => {
             setUploadComplete(true);
             dispatch(appendValue(response.data["hash"]));
 
-            console.log('API Response:', response.data);
             setTimeout(() => {
                 if(response.data.exists) {
                     navigate(`detect/${response.data["hash"]}`)
@@ -174,7 +174,7 @@ const Landing = () => {
                                         <Grid container spacing={1} alignItems="center">
                                             <Grid item xs={6}>
                                                 <input type="file" id="file-upload" onChange={onFileChange} style={{ display: 'none', zIndex: 1 }} />
-                                                <Button variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "normal" }} onClick={onSelectFileClicked} htmlFor="file-upload">
+                                                <Button variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "center" }} onClick={onSelectFileClicked} htmlFor="file-upload">
                                                     <LibraryAddIcon sx={{ marginRight: 1 }} />
                                                     <Typography variant="body2" sx={{ cursor: 'pointer', zIndex: 2, position: 'relative' }}>
                                                         Select File

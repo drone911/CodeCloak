@@ -50,7 +50,7 @@ const upload = multer({
 const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50;
 const MAX_SCAN_COUNT = Number(process.env.NODE_MAX_SCAN_COUNT) || 5;
 const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR_BELOW) || 50;
-const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 5000;
+const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 500;
 const FILE_COUNT_CACHE_SECONDS = Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10
 const GET_SCAN_CACHE_SECONDS = Number(process.env.NODE_GET_SCAN_CACHE_SECONDS) || 500
 
@@ -165,7 +165,7 @@ app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
         const { hash } = req.params
         const cachedResponse = mcache.get(`scan/${hash}`)
         if (cachedResponse) {
-            return cachedResponse;
+            return res.json(cachedResponse);
         }
         const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size detectionData');
         if (!fileDocument) {
@@ -213,7 +213,7 @@ app.get('/files', async (req: Request, res: Response) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    // console.error(err);
+    console.error(err);
     res.status(500).send("An unexpected error occurred.");
 });
 
