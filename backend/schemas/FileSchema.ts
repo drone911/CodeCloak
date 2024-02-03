@@ -11,7 +11,8 @@ interface IFile extends Document {
     path: string,
     size: number,
     countOfScans: number,
-    detectionData: IdetectionData[]
+    detectionData: IdetectionData[],
+    detectionsCount: number,
 }
 const IdetectionSchema = new Schema<IdetectionData>({
     startIndex: { type: Number, required: true },
@@ -24,7 +25,8 @@ const fileSchema = new Schema<IFile>({
     path: { type: String, required: true },
     size: { type: Number, required: true },
     countOfScans: { type: Number, default: 0 },
-    detectionData: { type: [IdetectionSchema], default: []}
+    detectionData: { type: [IdetectionSchema], default: []},
+    detectionsCount: { type: Number, default: 0}
 });
 
 export const FileModel = model<IFile>('File', fileSchema);

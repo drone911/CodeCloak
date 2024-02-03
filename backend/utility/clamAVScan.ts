@@ -32,17 +32,18 @@ async function scanFileWithClamAVUtil(fileContent: Buffer, start: number, end: n
     const rightResult = await scanBufferWithClamAV(fileContent.subarray(mid + 1, end));
 
     if (leftResult.isInfected && rightResult.isInfected) {
-        scanFileWithClamAVUtil(fileContent, start, mid, detections);
-        scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
+        await scanFileWithClamAVUtil(fileContent, start, mid, detections);
+        await scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
 
     } else if (leftResult.isInfected && !rightResult.isInfected) {
-        scanFileWithClamAVUtil(fileContent, start, mid, detections);
+        await scanFileWithClamAVUtil(fileContent, start, mid, detections);
 
     }
     else if (!leftResult.isInfected && rightResult.isInfected) {
-        scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
+        await scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
 
     } else {
+        console.log({ startIndex: start, endIndex: end })
         detections.push({ startIndex: start, endIndex: end })
     }
 }
@@ -57,7 +58,7 @@ const scanFileWithClamAV = async (fileContent: Buffer): Promise<IdetectionData[]
     if (!fullScanResult.isInfected) {
         return detections;
     }
-    scanFileWithClamAVUtil(fileContent, start, end, detections);
+    await scanFileWithClamAVUtil(fileContent, start, end, detections);
     return detections;
 }
 
