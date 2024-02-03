@@ -9,8 +9,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as mcache from 'memory-cache';
 
-import { model } from 'mongoose';
-
 import { FileModel } from './schemas/FileSchema';
 import { FileVirusTotalModel } from './schemas/VirusTotalMetaDataSchema';
 
@@ -53,6 +51,8 @@ const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR
 const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 500;
 const FILE_COUNT_CACHE_SECONDS = Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10
 const GET_SCAN_CACHE_SECONDS = Number(process.env.NODE_GET_SCAN_CACHE_SECONDS) || 500
+const GET_RECENT_FILES_CACHE_SECONDS = Number(process.env.NODE_GET_RECENT_FILES_CACHE_SECONDS) || 500
+
 
 app.get('/api/file/count', async (req: Request, res: Response) => {
     let files_count = mcache.get("db_file_count")
@@ -94,7 +94,7 @@ app.get('/api/file/:hash/virustotal', async (req: Request, res: Response) => {
         if (error.response && error.response.status === 404) {
             return res.status(404).json({ error: "Not Found" })
         }
-        console.error(error);   
+        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
@@ -139,9 +139,10 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
         const fileBuffer = fs.readFileSync(fileDocument.path);
 
         const detections = await scanFileWithClamAV(fileBuffer);
-
         fileDocument.detectionData = detections;
+        fileDocument.detectionsCount = detections.length;
         fileDocument.countOfScans += 1;
+        console.debug(`Scanned file ${fileDocument.sha256hash} ${fileDocument.countOfScans} times, and found ${fileDocument.detectionsCount} detections}.`)
         await fileDocument.save();
 
         const fileContent = fileBuffer.toString('utf-8');
@@ -194,6 +195,45 @@ app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/api/recent-five-files', async (req: Request, res: Response) => {
+    let files = mcache.get("recent-five")
+    files = undefined;
+    if (files) {
+        return res.json(files)
+    }
+    try {
+
+        files = await FileModel.find({
+            detectionsCount: {
+                $gte: 1
+            },
+        }, "-_id sha256hash size detectionsCount", {
+            sort: {
+                detectionsCount: -1 //Sort by Date Added DESC
+            },
+            limit: 5
+        }).lean();
+        for (let i = 0; i < files.length; i++) {
+            let data: any = await FileVirusTotalModel.findOne({
+                sha256hash: files[i].sha256hash
+            }, "metadata.names -_id").lean();
+            if (data) {
+                let names = data.metadata.names;
+                if (names.length > 0) {
+                    files[i].commonName = names[0];
+                }
+            }
+        }
+
+        mcache.put("recent-five", files, GET_RECENT_FILES_CACHE_SECONDS * 1000)
+        return res.json(files);
+
+    } catch (error) {
+        console.error('Error fetching recent files:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+})
 
 app.get('/files', async (req: Request, res: Response) => {
     try {
