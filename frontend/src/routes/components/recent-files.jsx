@@ -1,6 +1,9 @@
 import React from "react";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, tableCellClasses, styled } from "@mui/material";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Stack, tableCellClasses, styled, Skeleton, Typography, Link, Grid } from "@mui/material";
 import numeral from "numeral";
+import { Await, useLoaderData } from "react-router-dom";
+
+import LaunchIcon from "@mui/icons-material/Launch";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -24,38 +27,42 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const columns = [
     { id: 'sha256', label: 'Sha 256 Hash', maxWidth: "8rem" },
     {
-        id: 'size',
-        label: 'Size\u00a0(Bytes)',
-        minWidth: 5,
-        align: 'right',
-        format: (value) => value.toLocaleString('en-US'),
-    },
-    {
         id: 'detections',
         label: 'Detections',
-        minWidth: 5,
+        minWidth: "4.5rem",
         align: 'right',
-        format: (value) => value.toLocaleString('en-US'),
+        format: (value) => value.toLocaleString('en-US')
     },
-    { id: 'common_name', label: 'Common Name', minWidth: 2 }
+    {
+        id: 'size',
+        label: 'Size\u00a0(Bytes)',
+        align: 'right',
+        format: (value) => value.toLocaleString('en-US')
+    },
+    { id: 'common_name', label: 'Common Name' },
 ];
 
-function createData(common_name, sha256, size, detections, code) {
+function createData(sha256, size, detections, common_name) {
     size = numeral(size).format("0.0b");
-    detections = numeral(detections).format("0.00a").toUpperCase();
-
-    return { common_name, sha256, size, detections, code };
+    detections = numeral(detections).format("a");
+    if (!common_name) {
+        common_name = "Not available"
+    }
+    return { sha256, size, detections, common_name };
 }
 
-const rows = [
-    createData('Lockbit 2.0', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1324171354, 3287263, 1),
-    createData('Win/Stuxnet', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1403500365, 9596961, 2),
-    createData('Win/Stuxnet2', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 60483973, 301340, 3),
-    createData('Win/Stuxnet3', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 327167434, 9833520, 4),
-];
+// let rows = [
+//     createData('Lockbit 2.0', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1324171354, 3287263),
+//     createData('Win/Stuxnet', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1403500365, 9596961),
+//     createData('Win/Stuxnet2', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 60483973, 301340),
+//     createData('Win/Stuxnet3', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 327167434, 9833520),
+// ];
 
 
 const RecentFiles = () => {
+    const data = useLoaderData();
+    const recentFilesResponse = data.recent_uploads;
+    const wow = [1, 2, 3, 4, 5];
     return (
         <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
@@ -64,9 +71,8 @@ const RecentFiles = () => {
                         {columns.map((column) => (
                             <StyledTableCell
                                 key={column.id}
-                                align={column.align}
                                 style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
-                                sx={{ maxWidth: "3rem", textOverflow: 'ellipsis', overflow: 'hidden' }}
+                                sx={{ maxWidth: "3rem", textOverflow: "ellipsis", overflow: 'hidden' }}
                             >
                                 {column.label}
                             </StyledTableCell>
@@ -74,25 +80,85 @@ const RecentFiles = () => {
                     </StyledTableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row) => {
-                        return (
-                            <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                {columns.map((column) => {
-                                    const value = row[column.id];
+                    <React.Suspense
+
+                        fallback={
+                            wow.map((row, index) => {
+                                return (
+                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                        {columns.map((column) => {
+                                            return (
+                                                <StyledTableCell key={column.id}>
+                                                    <Skeleton></Skeleton>
+                                                </StyledTableCell>
+                                            );
+                                        }
+                                        )}
+                                    </StyledTableRow>)
+                            })
+                        }
+                    >
+                        <Await
+                            resolve={recentFilesResponse}
+                            errorElement={
+                                <Typography color="error" variant="body1" >
+                                    Error
+                                </Typography>
+                            }
+                            children={(recentFilesResponse) => {
+                                let rows = recentFilesResponse.data.map((recentFile) => {
+                                    return createData(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
+                                })
+                                return rows.map((row, index) => {
                                     return (
-                                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth, textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                                            {column.format && typeof value === 'number'
-                                                ? column.format(value)
-                                                : value}
-                                        </StyledTableCell>
+                                        <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                            {
+                                                columns.map((column) => {
+                                                    const value = row[column.id];
+                                                    return (
+                                                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                                            {
+                                                                column.id !== "sha256" && (
+                                                                    column.format && typeof value === 'number'
+                                                                        ? column.format(value)
+                                                                        : value
+                                                                )}
+                                                            {
+                                                                (column.id == "sha256") && (
+                                                                    <React.Fragment>
+
+                                                                        < Link display="inline" href={`/detect/${row.sha256}`} rel="noopener, noreferrer" target="_blank">
+                                                                            <Grid container>
+                                                                                <Grid xs={10} sx={{ maxWidth: column.maxWidth, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                                                                    {column.format && typeof value === 'number'
+                                                                                        ? column.format(value)
+                                                                                        : value}
+
+                                                                                </Grid>
+                                                                                <Grid xs={2}>
+                                                                                    <LaunchIcon sx={{ display: "inline" }}></LaunchIcon>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        </Link>
+
+                                                                    </React.Fragment>
+
+                                                                )
+                                                            }
+
+                                                        </StyledTableCell>
+                                                    );
+                                                })
+                                            }
+                                        </StyledTableRow>
                                     );
-                                })}
-                            </StyledTableRow>
-                        );
-                    })}
+                                })
+                            }}
+                        />
+                    </React.Suspense>
                 </TableBody>
             </Table>
-        </TableContainer>)
+        </TableContainer >)
 }
 
 export default RecentFiles;

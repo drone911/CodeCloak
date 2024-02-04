@@ -28,12 +28,13 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Skeleton from '@mui/material/Skeleton';
 
 
-import { Snackbar, Alert, Paper, Stack, useTheme} from '@mui/material';
+import { Snackbar, Alert, Paper, Stack, useTheme } from '@mui/material';
 
 
 const landingLoader = async () => {
     return defer({
-        db_file_count: axios.get(`${process.env.REACT_APP_API_URL}/file/count`)
+        db_file_count: axios.get(`${process.env.REACT_APP_API_URL}/file/count`),
+        recent_uploads: axios.get(`${process.env.REACT_APP_API_URL}/recent-five-files`)
     })
 }
 function CustomTabPanel(props) {
@@ -71,8 +72,10 @@ const Landing = () => {
     const [darkMode] = useOutletContext();
     const [showFileSizeErrorSnackbar, setShowFileSizeErrorSnackbar] = useState(false);
     const [showFileUploadErrorSnackbar, setShowFileUploadErrorSnackbar] = useState(false);
-    const isSmallScreen = useMediaQuery(useTheme().breakpoints.down('sm'));
+    const [showFileUploadSuccessSnackbar, setShowFileUploadSuccessSnackbar] = useState(false);
     
+    const isSmallScreen = useMediaQuery(useTheme().breakpoints.down('sm'));
+
     const navigate = useNavigate();
     const dataFromLoader = useLoaderData();
 
@@ -117,18 +120,20 @@ const Landing = () => {
                 },
             });
             setUploadComplete(true);
+            setShowFileUploadSuccessSnackbar(true)
             dispatch(appendValue(response.data["hash"]));
 
             setTimeout(() => {
-                if(response.data.exists) {
+                if (response.data.exists) {
                     navigate(`detect/${response.data["hash"]}`)
-                } else{
+                } else {
                     navigate(`scan/${response.data["hash"]}`)
                 }
-            }, 2000)
+            }, 4000)
         } catch (error) {
             console.error('Error uploading file:', error);
             setShowFileUploadErrorSnackbar(true);
+            setShowFileUploadSuccessSnackbar(false)
             // Reset Fields
             setSelectedFile(null)
             setUploadComplete(false)
@@ -139,6 +144,7 @@ const Landing = () => {
         if (reason === 'clickaway') {
             return;
         }
+        setShowFileUploadSuccessSnackbar(false)
         setShowFileSizeErrorSnackbar(false);
         setShowFileUploadErrorSnackbar(false);
     }
@@ -165,7 +171,7 @@ const Landing = () => {
                     ></div> */}
                     <Grid container xs={12} md={12}>
                         <Grid item xs={12} md={8}>
-                            <Paper sx={{ px: isSmallScreen ? 2 : 3, py: isSmallScreen ? 2 : 2, mx: isSmallScreen ? 2 : 0 }} elevation={3}>
+                            <Paper sx={{ px: isSmallScreen ? 2 : 3, py: isSmallScreen ? 2 : 2, mx: isSmallScreen ? 2 : 0 }} elevation={2}>
                                 <Typography variant="body1" color="primary">
                                     Upload Pen-Testing Code or Binary
                                 </Typography>
@@ -207,47 +213,49 @@ const Landing = () => {
                             </Paper>
 
                         </Grid>
-                        <Grid item xs={12} md={4} display="flex" justifyContent="center">
-                            <Paper sx={{ px: 3, py: 2 }} elevation={3}>
-                                <Typography variant="body1" color="primary">
-                                    Signatures detected in
-                                </Typography>
-                                <React.Suspense
-                                    fallback={
-                                        <Typography variant="h4">
-                                            <Skeleton />
-                                        </Typography>}
-                                >
-                                    <Await
-                                        resolve={dataFromLoader.db_file_count}
-                                        errorElement={
-                                            <Typography variant="body1" color="error">
-                                                Error loading count of files!
-                                            </Typography>
-                                        }
+                        {!isSmallScreen &&
+                            <Grid item xs={12} md={4} display="flex" justifyContent="center">
+                                <Paper sx={{ px: 3, py: 2 }} elevation={1}>
+                                    <Typography variant="body1" color="primary">
+                                        Signatures detected in
+                                    </Typography>
+                                    <React.Suspense
+                                        fallback={
+                                            <Typography variant="h4">
+                                                <Skeleton />
+                                            </Typography>}
                                     >
-                                        {(db_file_count) => (
-                                            <Grid container display="flex" alignItems="flex-end">
-                                                <Grid item xs={6}>
-                                                    <Typography variant="h3" p={0}>
-                                                        {numeral(db_file_count.data.count).format('0a')}
-                                                    </Typography> </Grid>
-                                                <Grid item>
-                                                    <Typography variant="body1" pb={0.5}>
-                                                        files
-                                                    </Typography>
+                                        <Await
+                                            resolve={dataFromLoader.db_file_count}
+                                            errorElement={
+                                                <Typography variant="body1" color="error">
+                                                    Error loading count of files!
+                                                </Typography>
+                                            }
+                                        >
+                                            {(db_file_count) => (
+                                                <Grid container display="flex" alignItems="flex-end">
+                                                    <Grid item xs={6}>
+                                                        <Typography variant="h3" p={0}>
+                                                            {numeral(db_file_count.data.count).format('0a')}
+                                                        </Typography> </Grid>
+                                                    <Grid item>
+                                                        <Typography variant="body1" pb={0.5}>
+                                                            files
+                                                        </Typography>
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
 
-                                        )}
-                                    </Await>
-                                </React.Suspense>
+                                            )}
+                                        </Await>
+                                    </React.Suspense>
 
-                            </Paper>
-                        </Grid>
+                                </Paper>
+                            </Grid>
+                        }
                     </Grid>
                     <Grid item xs={12} md={12}>
-                        <Paper elevation={3} >
+                        <Paper elevation={2} >
                             <Tabs value={value} onChange={handleChange} textColor="primary"
                                 indicatorColor="primary" aria-label="basic tabs example">
                                 <Tab label="Recent Uploads" {...a11yProps(0)} />
@@ -264,6 +272,11 @@ const Landing = () => {
 
                 </Grid>
             </Grid>
+            <Snackbar open={showFileUploadSuccessSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+                    File Upload Success, scanning...
+                </Alert>
+            </Snackbar>
             <Snackbar open={showFileSizeErrorSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
                     File size should be less then {process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE / 1000000} MB
