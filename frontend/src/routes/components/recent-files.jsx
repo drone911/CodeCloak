@@ -62,7 +62,7 @@ function createData(sha256, size, detections, common_name) {
 const RecentFiles = () => {
     const data = useLoaderData();
     const recentFilesResponse = data.recent_uploads;
-    const wow = [1, 2, 3, 4, 5];
+
     return (
         <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
@@ -81,21 +81,22 @@ const RecentFiles = () => {
                 </TableHead>
                 <TableBody>
                     <React.Suspense
-
                         fallback={
-                            wow.map((row, index) => {
-                                return (
-                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        {columns.map((column) => {
-                                            return (
-                                                <StyledTableCell key={column.id}>
-                                                    <Skeleton></Skeleton>
-                                                </StyledTableCell>
-                                            );
-                                        }
-                                        )}
-                                    </StyledTableRow>)
-                            })
+                            <React.Fragment>
+                                {Array.from({ length: 5 }).map((_, index) => {
+                                    return (
+                                        <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                            {columns.map((column) => {
+                                                return (
+                                                    <StyledTableCell key={column.id}>
+                                                        <Skeleton></Skeleton>
+                                                    </StyledTableCell>
+                                                );
+                                            }
+                                            )}
+                                        </StyledTableRow>)
+                                })}
+                            </React.Fragment>
                         }
                     >
                         <Await
