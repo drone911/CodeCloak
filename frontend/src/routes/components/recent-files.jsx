@@ -1,8 +1,10 @@
 import React from "react";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Stack, tableCellClasses, styled, Skeleton, Typography, Link, Grid } from "@mui/material";
-import numeral from "numeral";
-import { Await, useLoaderData } from "react-router-dom";
 
+import { Await, useLoaderData } from "react-router-dom";
+import numeral from "numeral";
+
+
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Stack, tableCellClasses, styled, Skeleton, Typography, Link, Grid } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -64,7 +66,7 @@ const RecentFiles = () => {
     const recentFilesResponse = data.recent_uploads;
 
     return (
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ maxHeight: "50vh" }}>
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <StyledTableRow>
@@ -143,10 +145,8 @@ const RecentFiles = () => {
                                                                         </Link>
 
                                                                     </React.Fragment>
-
                                                                 )
                                                             }
-
                                                         </StyledTableCell>
                                                     );
                                                 })

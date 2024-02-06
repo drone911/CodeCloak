@@ -2,15 +2,15 @@
 import React from 'react';
 import { DetectionsFoundGrid, DetectionsNotFoundGrid, DetectionsGridSkeleton } from "./detectionsGrid";
 
-import { Await, useLoaderData, useOutletContext } from 'react-router-dom';
-import { Paper, Typography, Stack, Tooltip, Box, styled, Avatar, IconButton, Link, Skeleton, ThemeProvider, useTheme, createTheme } from '@mui/material';
+import { Await, useLoaderData, useOutletContext, useNavigate } from 'react-router-dom';
+import { Button, Paper, Typography, Stack, Tooltip, Box, Avatar, IconButton, Link, Skeleton, ThemeProvider, createTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
-import { ContentCopy, KeyboardDoubleArrowDownRounded, Plagiarism, PlagiarismOutlined, PlagiarismSharp, MoreHoriz, Error } from '@mui/icons-material';
+import { ContentCopy, KeyboardDoubleArrowDownRounded, PlagiarismSharp, Error, FirstPage } from '@mui/icons-material';
 import numeral from 'numeral';
 import { darkTheme, lightTheme } from '../../theme';
 
-const CopyableBody1Text = ({ text }) => {
+const CopyableBody1Text = ({ text, isSmallScreen }) => {
     const [copySuccess, setCopySuccess] = React.useState(false);
     let setCopyToDefaultTimerHandler;
     const handleCopyClick = () => {
@@ -50,7 +50,7 @@ const CopyableBody1Text = ({ text }) => {
 
             <Tooltip title={text}>
                 <Typography variant="body1" color="primary" onClick={handleCopyClick} sx={{
-                    cursor: "pointer", maxWidth: "45vw", overflow: 'hidden',
+                    cursor: "pointer", maxWidth: isSmallScreen ? "40vw" : "45vw", overflow: 'hidden',
                     textOverflow: 'ellipsis'
                 }}>
                     {text}
@@ -99,7 +99,7 @@ const ShowDetections = ({ isSmallScreen }) => {
 
     const data = useLoaderData();
     const [darkMode] = useOutletContext();
-
+    const navigate = useNavigate();
     const scanMetadata = data.scanMetadata;
 
     // Use this state to set the max height of the detections container
@@ -128,24 +128,34 @@ const ShowDetections = ({ isSmallScreen }) => {
             fontSize: '1.2rem',
         },
     };
+    const goToHome = () => {
+        navigate("/")
+    }
     return (
         <ThemeProvider theme={bigTextTheme}>
 
             <Box px={3} paddingBottom={isSmallScreen ? 1.5 : 3}>
-                <Typography sx={{ fontWeight: "600", color: "var(--primary-text-dark-600)" }} variant="body2" >
-                    File Sha256 Hash
-                </Typography>
-                <React.Suspense fallback={<Skeleton height="2rem" sx={{ maxWidth: "50vw" }}></Skeleton>}>
-                    <Await
-                        resolve={scanMetadata}
-                        errorElement={<Typography color="error">Error while fetching data</Typography>}
-                        children={
-                            (metadata) => (
-                                <CopyableBody1Text text={metadata.data[0].hash} ></CopyableBody1Text>
-                            )
-                        }
-                    />
-                </React.Suspense>
+                <Box sx={{ paddingTop: "0.5rem", display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexDirection: "column" }}>
+                        <Typography sx={{ fontWeight: "600", color: "var(--primary-text-dark-600)" }} variant="body2" >
+                            File Sha256 Hash
+                        </Typography>
+                        <React.Suspense fallback={<Skeleton height="2rem" sx={{ maxWidth: "50vw" }}></Skeleton>}>
+                            <Await
+                                resolve={scanMetadata}
+                                errorElement={<Typography color="error">Error while fetching data</Typography>}
+                                children={
+                                    (metadata) => (
+                                        <CopyableBody1Text text={metadata.data[0].hash} isSmallScreen={isSmallScreen} ></CopyableBody1Text>
+                                    )
+                                }
+                            />
+                        </React.Suspense>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignContent: 'flex-end', flexDirection: "column", alignSelf: "flex-start" }}>
+                        <Button size={isSmallScreen ? 'small' : "medium"} onClick={goToHome} variant="contained" color="success" startIcon={<FirstPage></FirstPage>} >Go Back</Button>
+                    </Box>
+                </Box>
                 <Box sx={{ paddingTop: "0.5rem", display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexDirection: "column" }}>
                         <Typography sx={{ display: "inline", fontWeight: "600", color: "var(--primary-text-dark-600)" }} variant="body2" >
@@ -235,7 +245,7 @@ const ShowDetections = ({ isSmallScreen }) => {
                                             }
                                             return (
                                                 <Typography variant='body2' sx={{ paddingLeft: "0.5rem", fontWeight: 600, color: "var(--primary-text-dark-700)" }}>
-                                                    {metadata.data[0].detections.length} detections
+                                                    {detections.length} detections
                                                 </Typography>)
                                         }}
                                     />
@@ -244,7 +254,7 @@ const ShowDetections = ({ isSmallScreen }) => {
                         </Grid>
 
                     </Grid>
-                    <Grid id="detectionsGrid" container xs={12} sx={{ overflow: "auto", maxHeight: `${detectionsMaxHeight}vh` }}>
+                    <Grid id="detectionsGrid" container xs={12} sx={{ overflowY: "auto", maxHeight: `${detectionsMaxHeight}vh` }}>
                         <React.Suspense fallback={
                             DetectionsGridSkeleton}>
                             <Await resolve={scanMetadata}

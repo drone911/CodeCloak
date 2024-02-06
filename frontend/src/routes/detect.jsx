@@ -5,7 +5,7 @@ import { defer, useOutletContext } from 'react-router-dom';
 import VirusTotalSummary from './components/virustotal-summary';
 import ShowDetections from './components/show-detections';
 
-import { Container, Paper, Divider, ThemeProvider, createTheme } from '@mui/material';
+import { Divider } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 
@@ -35,16 +35,16 @@ const Detect = () => {
     const [_, isSmallScreen] = useOutletContext();
     return (
 
-                <Grid container spacing={3} paddingTop={4}>
-                    <Grid xs={12} md={8}>
-                        <ShowDetections scanAPIResponse={noDetectionScanAPIResponse} isSmallScreen={isSmallScreen}></ShowDetections>
-                        {isSmallScreen && <Divider sx={{ my: 2, maxWidth: "90%", mx: "auto" }} />}
-                    </Grid>
+        <Grid container spacing={3} paddingTop={4}>
+            <Grid xs={12} md={8}>
+                <ShowDetections scanAPIResponse={noDetectionScanAPIResponse} isSmallScreen={isSmallScreen}></ShowDetections>
+                {isSmallScreen && <Divider sx={{ my: 2, maxWidth: "90%", mx: "auto" }} />}
+            </Grid>
 
-                    <Grid xs={12} md={4}>
-                        <VirusTotalSummary />
-                    </Grid>
-                </Grid>
+            <Grid xs={12} md={4}>
+                <VirusTotalSummary />
+            </Grid>
+        </Grid>
     )
 }
 

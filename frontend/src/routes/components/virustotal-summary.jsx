@@ -3,6 +3,12 @@ import { Await, useLoaderData } from 'react-router-dom';
 
 import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent, Chip, List } from '@mui/material';
 import { OpenInNew, Loop } from '@mui/icons-material'
+import styled from '@emotion/styled';
+
+const ChipWithMargin = styled(Chip)(() => ({
+    marginRight: "0.2rem",
+    marginBottom: "0.4rem"
+}));
 
 const reputationMap = {
     "[50, 100]": {
@@ -190,7 +196,7 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                         <List>
                             {metadata.data.names.map((name, index) => {
                                 return (
-                                    <Chip key={index} size="medium" color="primary" label={name} variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <ChipWithMargin key={index} size="medium" color="primary" label={name} variant="outlined"></ChipWithMargin>
                                 )
                             })}
                         </List>
@@ -207,7 +213,7 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                         <List>
                             {metadata.data.tags.map((name, index) => {
                                 return (
-                                    <Chip key={index} size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <ChipWithMargin key={index} size="medium" label={name} color="primary" variant="outlined"></ChipWithMargin>
                                 )
                             })}
                         </List>
@@ -224,7 +230,7 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                         <List>
                             {metadata.data.typeTags.map((name, index) => {
                                 return (
-                                    <Chip key={index} size="medium" label={name} color="primary" variant="outlined" sx={{ scale: "1.1" }}></Chip>
+                                    <ChipWithMargin key={index} size="medium" label={name} color="primary" variant="outlined"></ChipWithMargin>
                                 )
                             })}
                         </List>
@@ -238,7 +244,7 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                             Fetched
                         </Typography>
                         <List>
-                            <Typography sx = {{color: "var(--primary-light)"}}>
+                            <Typography sx={{ color: "var(--primary-light)", textTransform: "capitalize" }}>
                                 {calculateRelativeDate(metadata.data.fetchTime)}
                             </Typography>
 

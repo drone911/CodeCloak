@@ -7,6 +7,9 @@ export const uploadedFilesSlice = createSlice({
     },
     reducers: {
         appendValue: (state, action) => {
+            if(state.value.lenght >= 5) {
+                state.value = state.value.shift();
+            }
             state.value.push(action.payload);
         }
     }

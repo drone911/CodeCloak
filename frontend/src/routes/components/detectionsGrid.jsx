@@ -9,8 +9,9 @@ const CodeSpan = styled('span')({
     '@media (min-width:600px)': {
         fontSize: '1.3rem',
     },
-
-    margin: "0px"
+    wordWrap: "break-word",
+    margin: "0px",
+    marginX: "2px"
 });
 
 const HoverSpan = styled(CodeSpan)({
@@ -24,12 +25,12 @@ const HoverSpan = styled(CodeSpan)({
 const DetectionsFoundGrid = ({ scanMetadata }) => {
     return (<React.Fragment>
 
-        {scanMetadata.data[0].detections.map((detection, index) => (
-            <React.Fragment key={index}>
+        {scanMetadata.data[0].detections && scanMetadata.data[0].detections.map((detection, index) => (
+            <React.Fragment key={index+1}>
                 <Grid xs={1} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
 
                     <Typography variant="h5" sx={{ fontSize: "1.1rem", paddingTop: "6px", fontWeight: "500", color: "var(--lt-color-gray-600)" }}>
-                        {index}.
+                        {index+1}.
                     </Typography>
                 </Grid>
                 <Grid xs={11} md={11.5} sx={{ paddingY: 1, borderLeft: "1px solid var(--ds-border,#ebecf0)" }}>
@@ -40,6 +41,46 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                 paddingLeft: "1rem"
                             }}
                         >
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
+                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                {detection.paddedContentBefore}
+                            </CodeSpan>
                             <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
                                 {detection.paddedContentBefore}
                             </CodeSpan>
@@ -56,13 +97,18 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                     detection.maliciousContentContinue &&
 
                                     <React.Fragment>
-                                        <MoreHoriz sx={{
-                                            fontSize: "1.1rem",
+                                        <span style={{
+                                            display: "inline-block",
+                                            marginLeft: "0.3rem",
+                                            marginRight: "0.3rem",
+                                            fontWeight: "400",
+                                            fontSize: "1.3rem",
                                             '@media (min-width:600px)': {
                                                 fontSize: '1.3rem',
-                                            },
-                                            marginX: "0.3rem"
-                                        }}></MoreHoriz>
+                                            }
+                                        }} >
+                                            ...
+                                        </span>
                                         <HoverSpan style={{
                                             backgroundColor: 'var(--ds-background-red-light)'
                                         }}>

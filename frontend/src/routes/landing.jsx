@@ -28,7 +28,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Skeleton from '@mui/material/Skeleton';
 
 
-import { Snackbar, Alert, Paper, Stack, useTheme } from '@mui/material';
+import { Snackbar, Alert, Paper, Stack, useTheme, Divider } from '@mui/material';
+import Footer from './components/footer';
 
 
 const landingLoader = async () => {
@@ -69,12 +70,11 @@ function a11yProps(index) {
 export { landingLoader };
 
 const Landing = () => {
-    const [darkMode] = useOutletContext();
+    const [darkMode, isSmallScreen, isTabScreen, darkThemePadded] = useOutletContext();
     const [showFileSizeErrorSnackbar, setShowFileSizeErrorSnackbar] = useState(false);
     const [showFileUploadErrorSnackbar, setShowFileUploadErrorSnackbar] = useState(false);
     const [showFileUploadSuccessSnackbar, setShowFileUploadSuccessSnackbar] = useState(false);
-    
-    const isSmallScreen = useMediaQuery(useTheme().breakpoints.down('sm'));
+
 
     const navigate = useNavigate();
     const dataFromLoader = useLoaderData();
@@ -171,7 +171,8 @@ const Landing = () => {
                     ></div> */}
                     <Grid container xs={12} md={12}>
                         <Grid item xs={12} md={8}>
-                            <Paper sx={{ px: isSmallScreen ? 2 : 3, py: isSmallScreen ? 2 : 2, mx: isSmallScreen ? 2 : 0 }} elevation={2}>
+                            {isTabScreen && <Divider sx={{ marginBottom: "1.5rem" }}></Divider>}
+                            <Paper sx={{ px: isSmallScreen ? 2 : 3, py: isSmallScreen ? 2 : 2, mx: isSmallScreen ? 2 : 0, maxWidth: isSmallScreen ? "100vw" : "60vw", margin: "0 auto" }} elevation={isSmallScreen ? 0 : 2}>
                                 <Typography variant="body1" color="primary">
                                     Upload Pen-Testing Code or Binary
                                 </Typography>
@@ -180,16 +181,16 @@ const Landing = () => {
                                         <Grid container spacing={1} alignItems="center">
                                             <Grid item xs={6}>
                                                 <input type="file" id="file-upload" onChange={onFileChange} style={{ display: 'none', zIndex: 1 }} />
-                                                <Button variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "center" }} onClick={onSelectFileClicked} htmlFor="file-upload">
+                                                <Button size={isSmallScreen ? "small" : "small"} variant="contained" sx={{ flexWrap: "nowrap", display: "flex", alignItems: "center" }} onClick={onSelectFileClicked} htmlFor="file-upload">
                                                     <LibraryAddIcon sx={{ marginRight: 1 }} />
                                                     <Typography variant="body2" sx={{ cursor: 'pointer', zIndex: 2, position: 'relative' }}>
-                                                        Select File
+                                                        Select {!isSmallScreen && "File"}
                                                     </Typography>
                                                 </Button>
                                             </Grid>
                                             <Grid item xs={6}>
                                                 <div style={{ zIndex: 2, position: 'relative' }}>
-                                                    <Typography variant="body1" sx={{ cursor: 'pointer', marginRight: 1 }}>
+                                                    <Typography variant="body1" sx={{ cursor: 'pointer', marginRight: 1, textOverflow: "ellipsis", overflow: "hidden" }}>
                                                         {selectedFile ? selectedFile.name : 'No file chosen'}
                                                     </Typography>
                                                 </div>
@@ -213,7 +214,7 @@ const Landing = () => {
                             </Paper>
 
                         </Grid>
-                        {!isSmallScreen &&
+                        {!isSmallScreen && !isTabScreen &&
                             <Grid item xs={12} md={4} display="flex" justifyContent="center">
                                 <Paper sx={{ px: 3, py: 2 }} elevation={1}>
                                     <Typography variant="body1" color="primary">
