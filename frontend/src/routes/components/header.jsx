@@ -2,13 +2,13 @@ import React from "react";
 
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 
-import { AppBar, styled, alpha, InputBase, ThemeProvider, Toolbar, Typography, IconButton, Button, Drawer, Box } from "@mui/material";
+import { AppBar, styled, alpha, InputBase, ThemeProvider, Toolbar, Typography, IconButton, Button, Drawer, Box, Avatar } from "@mui/material";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import SearchIcon from '@mui/icons-material/Search';
 
 import logo from '../../logo.svg'
-import { Menu } from "@mui/icons-material";
+import { GitHub, LinkedIn, Menu } from "@mui/icons-material";
 
 const Search = styled('div')(({ theme, isTabScreen }) => ({
     position: 'relative',
@@ -88,10 +88,10 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
     return (
         <ThemeProvider theme={darkModeTheme}>
             <AppBar position="static" elevation={3}>
-                <Toolbar sx={{ display: "flex", flexGrow: 1 }}>
+                <Toolbar sx={{ display: "flex", flexGrow: 1, justifyContent: "space-between" }}>
                     {isTabScreen &&
                         <React.Fragment>
-                            <IconButton sx={{marginRight: "0.3rem"}} onClick={toggleDrawer(true)}>
+                            <IconButton sx={{ marginRight: "0.3rem" }} onClick={toggleDrawer(true)}>
                                 <Menu></Menu>
                             </IconButton>
                             <Drawer
@@ -113,7 +113,7 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                             </Drawer>
                         </React.Fragment>
                     }
-                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent={isTabScreen ? "center" : "flex-start"} flexGrow={1} >
+                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent={isTabScreen ? "center" : "flex-start"}>
                         <Link to="/" rel="noopener noreferrer">
                             <div
                                 style={{
@@ -154,7 +154,17 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                         </Search>
 
                     }
-
+                    <Box display="flex" flexDirection="row" alignItems="center" alignContent="space-evenly" justifyContent="center">
+                        <Typography variant="h6" component="div" sx={{ marginX: "0.3rem", fontFamily: "Lobster Two, sans-serif" }}>
+                            By Jigar Patel
+                        </Typography>
+                        <Link to="https://www.github.com/drone911" rel="noopener noreferrer" target="_blank" style={{ display: "flex", alignItems: "center", textDecoration: 'none', color: 'inherit', margin: "auto 0.3rem" }}>
+                            <GitHub color="white" ></GitHub>
+                        </Link>
+                        <Link to="https://www.linkedin.com/in/ji-patel" rel="noopener noreferrer" target="_blank" style={{ display: "flex", alignItems: "center", textDecoration: 'none', color: 'inherit', margin: "auto 0.3rem" }}>
+                            <LinkedIn color="white" ></LinkedIn>
+                        </Link>
+                    </Box>
                     {/* {darkMode ? <Brightness4Icon /> : <WbSunnyIcon />}
         <Switch
           color='secondary'
