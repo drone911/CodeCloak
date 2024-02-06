@@ -43,7 +43,6 @@ async function scanFileWithClamAVUtil(fileContent: Buffer, start: number, end: n
         await scanFileWithClamAVUtil(fileContent, mid + 1, end, detections);
 
     } else {
-        console.log({ startIndex: start, endIndex: end })
         detections.push({ startIndex: start, endIndex: end })
     }
 }
