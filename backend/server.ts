@@ -23,6 +23,7 @@ const corsOptions = {
     origin: process.env.REACT_CORS_ORIGIN,
 };
 
+app.use(express.json());
 app.use(cors(corsOptions));
 app.use(Helmet());
 
@@ -45,10 +46,11 @@ const upload = multer({
     }
 });
 
-const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 50;
+const MAX_PAGE_SIZE = Number(process.env.NODE_MAX_PAGE_SIZE) || 10;
 const MAX_SCAN_COUNT = Number(process.env.NODE_MAX_SCAN_COUNT) || 5;
 const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR_BELOW) || 50;
-const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 500;
+const MAX_FILE_HEADER_CHARACTERS = Number(process.env.MAX_FILE_HEADER_CHARACTERS) || 200;
+const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 100;
 const FILE_COUNT_CACHE_SECONDS = Number(process.env.NODE_FILE_COUNT_CACHE_SECONDS) || 10
 const GET_SCAN_CACHE_SECONDS = Number(process.env.NODE_GET_SCAN_CACHE_SECONDS) || 500
 const GET_RECENT_FILES_CACHE_SECONDS = Number(process.env.NODE_GET_RECENT_FILES_CACHE_SECONDS) || 500
@@ -57,15 +59,15 @@ const GET_RECENT_FILES_CACHE_SECONDS = Number(process.env.NODE_GET_RECENT_FILES_
 app.get('/api/file/count', async (req: Request, res: Response) => {
     let files_count = mcache.get("db_file_count")
     if (files_count) {
-        res.json({ "count": files_count })
+        return res.json({ "count": files_count })
     } else {
         try {
             const files_count = await FileModel.countDocuments({}).exec();
             mcache.put("db_file_count", files_count, FILE_COUNT_CACHE_SECONDS * 1000)
-            res.status(200).json({ "count": files_count })
+            return res.status(200).json({ "count": files_count })
         } catch (error) {
             console.error('Error fetching document count:', error);
-            res.sendStatus(500).json({ error: 'Internal Server Error' });
+            return res.sendStatus(500).json({ error: 'Internal Server Error' });
         }
     }
 })
@@ -95,7 +97,7 @@ app.get('/api/file/:hash/virustotal', async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Not Found" })
         }
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 
@@ -115,11 +117,11 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
         await fileDocument.save()
         console.debug(`[/api/upload] File created: ${hash}.`);
 
-        res.json({ filename, hash });
+        return res.json({ filename, hash });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -151,23 +153,23 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
             return res.json([{ "detections": detectionsWithData, "hash": hash, "size": fileDocument.size, "scanner": "ClamAV", "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
         else {
-            const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
+            const fileHeader = getFileHeader(fileContent, MAX_FILE_HEADER_CHARACTERS);
             return res.json([{ "fileHeader": fileHeader, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
 app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
     try {
         const { hash } = req.params
-        const cachedResponse = mcache.get(`scan/${hash}`)
-        if (cachedResponse) {
-            return res.json(cachedResponse);
-        }
+        // const cachedResponse = mcache.get(`scan/${hash}`)
+        // if (cachedResponse) {
+        //     return res.json(cachedResponse);
+        // }
         const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size detectionData');
         if (!fileDocument) {
             return res.status(404).json({ error: "Not Found" });
@@ -184,20 +186,19 @@ app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
         }
         else {
             const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
-            const result = [{ "fileHeader": fileHeader, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }];
+            const result = [{ "fileHeader": fileHeader, "hash": hash, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }];
             mcache.put(`scan/${hash}`, result, GET_SCAN_CACHE_SECONDS * 1000);
             return res.json(result);
         }
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
 app.get('/api/recent-five-files', async (req: Request, res: Response) => {
     let files = mcache.get("recent-five")
-    files = undefined;
     if (files) {
         return res.json(files)
     }
@@ -230,25 +231,41 @@ app.get('/api/recent-five-files', async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Error fetching recent files:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 
 })
 
-app.get('/files', async (req: Request, res: Response) => {
+app.post('/api/files', async (req: Request, res: Response) => {
     try {
-        const page = Math.min(Math.max(1, Number(req.query.page)), MAX_PAGE_SIZE) || 1;
-        let pageSize = Number(req.query.pageSize) || 10;
-
-        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
-
-        const skip = (page - 1) * pageSize;
-
-        const files = await FileModel.find().skip(skip).limit(pageSize);
+        const { hashes } = req.body;
+        const files: any = await FileModel.find({
+            "sha256hash": hashes.slice(0, MAX_PAGE_SIZE)
+        }, "sha256hash size detectionsCount -_id", {
+            lean: true
+        });
+        if (!files) {
+            return res.json([])
+        }
+        const virustotalMetadatas = await FileVirusTotalModel.find({
+            "sha256hash": hashes.slice(0, MAX_PAGE_SIZE)
+        }, "sha256hash metadata.names -_id", {
+            lean: true
+        });
+        for (let file of files) {
+            file.commonName = "";
+            const matchingVirustotalRecord = virustotalMetadatas.find((value) => {
+                return value.sha256hash === file.sha256hash
+            })
+            if (matchingVirustotalRecord && matchingVirustotalRecord.metadata.names.length > 0) {
+                file.commonName = matchingVirustotalRecord.metadata.names[0];
+            }
+        }
+        return res.json(files)
 
     } catch (error) {
         console.error('Error fetching files:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
