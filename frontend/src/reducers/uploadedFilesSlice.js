@@ -7,10 +7,12 @@ export const uploadedFilesSlice = createSlice({
     },
     reducers: {
         appendValue: (state, action) => {
-            if(state.value.lenght >= 5) {
-                state.value = state.value.shift();
+            if (state.value.length >= 5) {
+                state.value.shift();
             }
             state.value.push(action.payload);
+            // Deduplicate array
+            state.value = [...new Set(state.value)];
         }
     }
 })

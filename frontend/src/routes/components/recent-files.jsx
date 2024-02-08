@@ -27,7 +27,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const columns = [
-    { id: 'sha256', label: 'Sha 256 Hash', maxWidth: "8rem" },
+    { id: 'sha256', label: 'Sha256 Hash', maxWidth: "8rem" },
     {
         id: 'detections',
         label: 'Detections',
@@ -41,7 +41,7 @@ const columns = [
         align: 'right',
         format: (value) => value.toLocaleString('en-US')
     },
-    { id: 'common_name', label: 'Common Name' },
+    { id: 'common_name', label: 'Common Name', maxWidth: "8rem"},
 ];
 
 function createData(sha256, size, detections, common_name) {

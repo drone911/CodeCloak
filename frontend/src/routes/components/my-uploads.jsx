@@ -30,7 +30,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const columns = [
-    { id: 'sha256', label: 'Sha 256 Hash', maxWidth: "8rem" },
+    { id: 'sha256', label: 'Sha256 Hash', maxWidth: "8rem" },
     {
         id: 'detections',
         label: 'Detections',
@@ -44,7 +44,7 @@ const columns = [
         align: 'right',
         format: (value) => value.toLocaleString('en-US')
     },
-    { id: 'common_name', label: 'Common Name' },
+    { id: 'common_name', label: 'Common Name', maxWidth: "8rem" },
 ];
 
 function createData(sha256, size, detections, common_name) {
@@ -127,66 +127,79 @@ const MyUploads = () => {
 
 
     return (
-        <TableContainer sx={{ maxHeight: "50vh" }}>
-            <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <StyledTableRow>
-                        {columns.map((column) => (
-                            <StyledTableCell
-                                key={column.id}
-                                style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
-                                sx={{ maxWidth: "3rem", textOverflow: "ellipsis", overflow: 'hidden' }}
-                            >
-                                {column.label}
-                            </StyledTableCell>
-                        ))}
-                    </StyledTableRow>
-                </TableHead>
-                <TableBody>
-                    {!uploadsPresent &&
-                        <Box sx={{ minHeight: "40vh" }}>
-                            <Typography sx={{ margin: "auto" }}>
-                                Wow
-                            </Typography>
-                        </Box>
-                    }
-                    {!isMyUploadsFetchComplete && uploadsPresent &&
-                        <React.Fragment>
-                            {Array.from({ length: 5 }).map((_, index) => {
-                                return (
-                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        {columns.map((column) => {
-                                            return (
-                                                <StyledTableCell key={column.id}>
-                                                    <Skeleton></Skeleton>
-                                                </StyledTableCell>
-                                            );
-                                        }
-                                        )}
-                                    </StyledTableRow>)
-                            })}
-                        </React.Fragment>
-                    }
-                    {/* errorElement={
-                        <Typography color="error" variant="body1" >
-                            Error
-                        </Typography>
-                    } */}
-                    {isMyUploadsFetchComplete &&
-                        <React.Fragment>
-                            {
-                                rows.map((row, index) => {
-                                    return (
-                                        <MyUploadsTableRow row={row} index={index}></MyUploadsTableRow>
-                                    );
-                                })
+        <React.Fragment>
 
+            {!uploadsPresent &&
+                <Box sx={{ minHeight: "35vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
+                    <Typography variant="h6">
+                        No Uploads Yet
+                    </Typography>
+                    <Typography variant="h5" color="primary" sx={{ marginTop: "0.7rem", fontWeight: 600 }}>
+                        {`(ノ￣□￣)ノ ~┻━┻`}
+                    </Typography>
+
+                </Box>
+
+
+            }
+            {
+                uploadsPresent && <TableContainer sx={{ maxHeight: "50vh" }}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <StyledTableRow>
+                                {columns.map((column) => (
+                                    <StyledTableCell
+                                        key={column.id}
+                                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                                        sx={{ textOverflow: "ellipsis", overflow: 'hidden' }}
+                                    >
+                                        {column.label}
+                                    </StyledTableCell>
+                                ))}
+                            </StyledTableRow>
+                        </TableHead>
+                        <TableBody>
+
+                            {!isMyUploadsFetchComplete &&
+                                <React.Fragment>
+                                    {Array.from({ length: 5 }).map((_, index) => {
+                                        return (
+                                            <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                                {columns.map((column) => {
+                                                    return (
+                                                        <StyledTableCell key={column.id}>
+                                                            <Skeleton></Skeleton>
+                                                        </StyledTableCell>
+                                                    );
+                                                }
+                                                )}
+                                            </StyledTableRow>)
+                                    })}
+                                </React.Fragment>
                             }
-                        </React.Fragment>
-                    }
-                </TableBody>
-            </Table>
-        </TableContainer >)
+                            {/* errorElement={
+                    <Typography color="error" variant="body1" >
+                    Error
+                    </Typography>
+                } */}
+                            {isMyUploadsFetchComplete &&
+                                <React.Fragment>
+                                    {
+                                        rows.map((row, index) => {
+                                            return (
+                                                <MyUploadsTableRow row={row} index={index}></MyUploadsTableRow>
+                                            );
+                                        })
+
+                                    }
+                                </React.Fragment>
+                            }
+                        </TableBody>
+                    </Table>
+                </TableContainer >
+            }
+        </React.Fragment>
+    )
 }
 
 export default MyUploads;
