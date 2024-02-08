@@ -275,7 +275,7 @@ const Landing = () => {
             </Grid>
             <Snackbar open={showFileUploadSuccessSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-                    File Upload Success, scanning...
+                    File uploaded successfully
                 </Alert>
             </Snackbar>
             <Snackbar open={showFileSizeErrorSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
