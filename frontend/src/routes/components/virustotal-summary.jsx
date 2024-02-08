@@ -1,7 +1,7 @@
 import React from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 
-import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent, Chip, List } from '@mui/material';
+import { Container, Paper, Typography, Box, Stack, Button, Link, Stepper, Step, StepLabel, StepContent, Chip, List, Skeleton } from '@mui/material';
 import { OpenInNew, Loop } from '@mui/icons-material'
 import styled from '@emotion/styled';
 
@@ -153,7 +153,47 @@ const VirusTotalPaperErrorElement = () => {
     );
 }
 
+const VirusTotalSkeleon = () => {
+    return (
+        <Box sx={{ maxWidth: 400 }} my={4} mx={3}>
+            <Stack spacing={1}>
+                <Box display="flex" flexDirection="column">
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
+                        Reputation
+                    </Typography>
+                    <Skeleton></Skeleton>
+                </Box>
+                <Box>
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
+                        Names
+                    </Typography>
+                    <Skeleton></Skeleton>
+                </Box>
+                <Box>
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
+                        Associated Tags
+                    </Typography>
+                    <Skeleton></Skeleton>
+                </Box>
+                <Box>
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
+                        Detected File Types
+                    </Typography>
+                    <Skeleton></Skeleton>
+                </Box>
+                <Box>
+                    <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
+                        Fetched
+                    </Typography>
+                    <Skeleton></Skeleton>
+                </Box>
+            </Stack >
+        </Box >
+    )
+}
 const VirusTotalPaper = ({ metadata, theme }) => {
+
+    const MAX_CHIP_LABELS = 8;
     const reputation = Number(metadata.data.reputation);
     let reputationText, reputationColor, reputationBackgroundColor;
 
@@ -189,12 +229,12 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                     </Button>
                 </Box>
                 {
-                    metadata.data.names && <Box>
+                    metadata.data.names && metadata.data.names.length > 0 && <Box>
                         <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Names
                         </Typography>
                         <List>
-                            {metadata.data.names.map((name, index) => {
+                            {metadata.data.names.slice(0, MAX_CHIP_LABELS).map((name, index) => {
                                 return (
                                     <ChipWithMargin key={index} size="medium" color="primary" label={name} variant="outlined"></ChipWithMargin>
                                 )
@@ -204,14 +244,14 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                     </Box>
                 }
                 {
-                    metadata.data.tags &&
+                    metadata.data.tags && metadata.data.tags.length > 0 &&
                     <Box>
 
                         <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Associated Tags
                         </Typography>
                         <List>
-                            {metadata.data.tags.map((name, index) => {
+                            {metadata.data.tags.slice(0, MAX_CHIP_LABELS).map((name, index) => {
                                 return (
                                     <ChipWithMargin key={index} size="medium" label={name} color="primary" variant="outlined"></ChipWithMargin>
                                 )
@@ -221,14 +261,14 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                     </Box>
                 }
                 {
-                    metadata.data.typeTags &&
+                    metadata.data.typeTags && metadata.data.typeTags.length > 0 &&
                     <Box>
 
                         <Typography variant="body2" color="var(--primary-text-dark-600)" sx={{ fontWeight: "600" }}>
                             Detected File Types
                         </Typography>
                         <List>
-                            {metadata.data.typeTags.map((name, index) => {
+                            {metadata.data.typeTags.slice(0, MAX_CHIP_LABELS).map((name, index) => {
                                 return (
                                     <ChipWithMargin key={index} size="medium" label={name} color="primary" variant="outlined"></ChipWithMargin>
                                 )
@@ -269,7 +309,7 @@ const VirusTotalSummary = () => {
                 </Typography>
             </Box>
             <Box>
-                <React.Suspense fallback={<div>TODO: Fallback</div>}>
+                <React.Suspense fallback={<VirusTotalSkeleon />}>
                     <Await
                         resolve={virusTotalMetadata}
                         errorElement={<VirusTotalPaperErrorElement />}
