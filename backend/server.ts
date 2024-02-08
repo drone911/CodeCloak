@@ -166,10 +166,10 @@ app.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
 app.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
     try {
         const { hash } = req.params
-        // const cachedResponse = mcache.get(`scan/${hash}`)
-        // if (cachedResponse) {
-        //     return res.json(cachedResponse);
-        // }
+        const cachedResponse = mcache.get(`scan/${hash}`)
+        if (cachedResponse) {
+            return res.json(cachedResponse);
+        }
         const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size detectionData');
         if (!fileDocument) {
             return res.status(404).json({ error: "Not Found" });
