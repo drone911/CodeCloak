@@ -21,12 +21,15 @@ const Search = styled('div')(({ theme, isTabScreen }) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
+    transition: "width 1s ease",
+    '& .MuiInputBase-root': {
+        transition: "width 1s ease",
+    },
     width: '100%',
     [theme.breakpoints.up('sm')]: {
         marginLeft: theme.spacing(3),
         width: 'auto',
     },
-    transition: "width 2s",
     '&:focus-within': {
         width: isTabScreen ? "100%" : "40vw"
     }
@@ -113,8 +116,8 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                             </div>
                         </Link>
                         <Typography variant="h6" component="div">
-                            <Link to="/" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                Catch Me If You Scan
+                            <Link to="/" rel="noopener noreferrer" style={{ marginLeft: "0.5rem", textDecoration: 'none', color: 'inherit', textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            Code Cloak
                             </Link>
                         </Typography>
                     </Box>

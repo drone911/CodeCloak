@@ -31,7 +31,7 @@ const columns = [
     {
         id: 'detections',
         label: 'Detections',
-        minWidth: "4.5rem",
+        minWidth: "5rem",
         align: 'right',
         format: (value) => value.toLocaleString('en-US')
     },

@@ -1,13 +1,13 @@
 import React from "react"
-import { styled, Box, Typography, Unstable_Grid2 as Grid, Tooltip, Stack, Skeleton } from "@mui/material"
-import { MoreHoriz } from "@mui/icons-material";
+import { styled, Box, Typography, Unstable_Grid2 as Grid, Stack, Skeleton } from "@mui/material"
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 
 const CodeSpan = styled('span')({
     borderRadius: "4px",
     padding: "1px 3px 1px 3px",
-    fontSize: "1.1rem",
+    fontSize: "0.9rem",
     '@media (min-width:600px)': {
-        fontSize: '1.3rem',
+        fontSize: '1.1rem',
     },
     wordWrap: "break-word",
     margin: "0px",
@@ -22,18 +22,31 @@ const HoverSpan = styled(CodeSpan)({
     },
 });
 
+const HtmlTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: "rgba(0, 0, 0, 0.90)",
+        maxWidth: 220,
+        fontSize: "5px",
+        border: '1px solid #dadde9',
+    },
+}));
+
 const DetectionsFoundGrid = ({ scanMetadata }) => {
     return (<React.Fragment>
 
         {scanMetadata.data[0].detections && scanMetadata.data[0].detections.map((detection, index) => (
-            <React.Fragment key={index+1}>
-                <Grid xs={1} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
+            <React.Fragment key={index + 1}>
+                <Grid item xs={1} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
 
                     <Typography variant="h5" sx={{ fontSize: "1.1rem", paddingTop: "6px", fontWeight: "500", color: "var(--lt-color-gray-600)" }}>
-                        {index+1}.
+                        {index + 1}.
                     </Typography>
                 </Grid>
-                <Grid xs={11} md={11.5} sx={{ paddingY: 1, borderLeft: "1px solid var(--ds-border,#ebecf0)" }}>
+                <Grid item xs={8} md={11.5} sx={{
+                    paddingY: 1, borderLeft: "1px solid var(--ds-border,#ebecf0)"
+                }}>
                     <Stack spacing={2}>
                         <Box
                             style={{
@@ -44,49 +57,27 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                             <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
                                 {detection.paddedContentBefore}
                             </CodeSpan>
-                            
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
-                            <Tooltip
-                                title={`Start Index: ${detection.startIndex}, End Index: ${detection.endIndex}`}
+                            <HtmlTooltip
+                                title={
+                                    <Typography color="white">
+
+                                        <Typography variant="h3" sx={{ fontSize: "0.8rem", fontWeight: 400, marginTop: "0.3rem" }}>
+                                            Start Index Offset:
+                                        </Typography>
+                                        <Typography variant="h3" fontWeight={500} fontSize="1.1rem" >
+                                            {detection.startIndex.toLocaleString()}
+                                        </Typography>
+                                        <Typography variant="h3" sx={{ fontSize: "0.8rem", fontWeight: 400, marginTop: "0.3rem" }}>
+                                            End Index Offset:
+                                        </Typography>
+                                        <Typography variant="h3" fontWeight={500} fontSize="1.1rem" marginBottom="0.2rem" >
+                                            {detection.endIndex.toLocaleString()}
+                                        </Typography>
+
+                                    </Typography>
+                                }
                                 arrow
+                                leaveDelay={500}
                             >
                                 <HoverSpan style={{
                                     backgroundColor: 'var(--ds-background-red-light)'
@@ -117,7 +108,7 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                     </React.Fragment>
                                 }
 
-                            </Tooltip>
+                            </HtmlTooltip>
                             <CodeSpan style={{
                                 backgroundColor: 'var(--ds-background-green-subtle)'
                             }}>
@@ -177,7 +168,6 @@ const DetectionsGridSkeleton = () => {
 
                 <Grid xs={1} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
 
-                    <Skeleton></Skeleton>
                 </Grid>
                 <Grid xs={11} md={11.5} sx={{ paddingY: 1, borderLeft: "1px solid var(--ds-border,#ebecf0)" }}>
                     <Stack spacing={2}>
@@ -187,7 +177,7 @@ const DetectionsGridSkeleton = () => {
                                 paddingLeft: "1rem"
                             }}
                         >
-                            <Skeleton></Skeleton>
+                            <Skeleton sx={{ maxWidth: "95%" }}></Skeleton>
                         </Box>
                     </Stack>
                 </Grid>

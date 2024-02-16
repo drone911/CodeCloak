@@ -9,28 +9,24 @@ const onErrorWaitTime = 6000;
 const displayTime = 8000;
 
 const displayText = [
-    "Scanning your file...",
-    "Splitting recursively and scanning...",
-    "Grinding the gears...",
-    "Still working on it...",
-    "Well, this is awkward...",
-    "Give us a minute please..."
+    "Tickling servers to wake them up...",
+    "Juggling ones and zeros with care...",
+    "Sending cyber ninjas out to fight cyber dragons...",
+    "Convincing pixels to align perfectly...",
+    "Convincing electrons to speed up their commute..."
 ]
 
 const Scanning = () => {
     const navigate = useNavigate();
     const params = useParams();
-    const [intervalId, setIntervalId] = React.useState(null);
 
     const [displayTextIndex, setDisplayTextIndex] = React.useState(0);
-
+    const scanApiCalled = React.useRef(false);
     React.useEffect(() => {
         const newIntervalId = setInterval(() => {
             const newDisplayIndex = (displayTextIndex + 1) % displayText.length;
             setDisplayTextIndex(newDisplayIndex);
         }, displayTime);
-
-        setIntervalId(newIntervalId);
 
         return () => {
             clearInterval(newIntervalId);
@@ -41,25 +37,29 @@ const Scanning = () => {
 
     React.useEffect(() => {
         const scanFile = async () => {
-            try {
-                await Promise.all([
-                    axios.post(`${process.env.REACT_APP_API_URL}/file/${params.hash}/scan`, {}),
-                    new Promise(resolve => setTimeout(resolve, minWaitTime))
-                ]);
-                navigate(`/detect/${params.hash}`);
-            } catch (error) {
-                console.error('Error scanning file:', error);
-                setTimeout(() => {
-                    setshowFileScanErrorSnackbar(true);
-                }, 200);
-                setTimeout(() => {
-                    setshowFileScanErrorSnackbar(false);
-                    navigate("/");
-                }, onErrorWaitTime);
+            if (!scanApiCalled.current) {
+                try {
+                    await (Promise.all([
+                        axios.post(`${process.env.REACT_APP_API_URL}/file/${params.hash}/scan`, {}),
+                        new Promise(resolve => setTimeout(resolve, minWaitTime))
+                    ]));
+                    navigate(`/detect/${params.hash}`);
+                } catch (error) {
+                    console.error('Error scanning file:', error);
+                    setTimeout(() => {
+                        setshowFileScanErrorSnackbar(true);
+                    }, 200);
+                    setTimeout(() => {
+                        setshowFileScanErrorSnackbar(false);
+                        navigate("/");
+                    }, onErrorWaitTime);
+                } finally {
+                    scanApiCalled.current = true;
+                }
             }
         };
         scanFile();
-    }, [params.hash, navigate]);
+    }, []);
 
 
     const handleSnackbarClose = (event, reason) => {

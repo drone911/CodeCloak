@@ -1,6 +1,6 @@
 {
-  "short_name": "CatchMeIfYouCan",
-  "name": "Catch Me If You Can",
+  "short_name": "CodeCloak",
+  "name": "Code Cloak",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#673ab7",
+  "background_color": "#000000"
 }

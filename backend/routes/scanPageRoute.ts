@@ -31,7 +31,7 @@ routes.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
         fileDocument.detectionData = detections;
         fileDocument.detectionsCount = detections.length;
         fileDocument.countOfScans += 1;
-        console.debug(`Scanned file ${fileDocument.sha256hash} ${fileDocument.countOfScans} times, and found ${fileDocument.detectionsCount} detections}.`)
+        console.debug(`Scanned file ${fileDocument.sha256hash} ${fileDocument.countOfScans} times, and found ${fileDocument.detectionsCount} detections.`)
         await fileDocument.save();
 
         const fileContent = fileBuffer.toString('utf-8');

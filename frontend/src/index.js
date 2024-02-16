@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       {
         path: "detect/:hash",
         loader: detectLoader,
-        element: <Detect />,
+        element: <Detect />
       },
       {
         path: "scan/:hash",

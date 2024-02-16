@@ -50,7 +50,7 @@ routes.get('/api/file/count', async (req: Request, res: Response) => {
 routes.post('/api/upload', upload.single('file'), async (req: Request, res: Response) => {
     try {
         const { path: filePath, filename } = req.file as Express.Multer.File;
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const fileContent = fs.readFileSync(filePath);
 
         const hash = crypto.createHash('sha256').update(fileContent).digest('hex');
 

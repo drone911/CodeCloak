@@ -8,7 +8,7 @@ import { FileVirusTotalModel } from '../schemas/VirusTotalMetaDataSchema';
 import { getFileInfoFromVirusTotal } from '../utility/virustotalAPI';
 import { getFileHeader, getRelaventFileContent } from '../utility/fileContent';
 
-
+const MAX_CHARACTER_FILE_HEADER = Number(process.env.MAX_CHARACTER_FILE_HEADER) || 700;
 const MAX_CHARACTERS_ABOVE_OR_BELOW = Number(process.env.MAX_CHARACTERS_ABOVE_OR_BELOW) || 50;
 const MAX_CHARACTERS_MALICIOUS = Number(process.env.MAX_MALICIOUS_CHARACTERS_TO_RETURN) || 100;
 const GET_SCAN_CACHE_SECONDS = Number(process.env.NODE_GET_SCAN_CACHE_SECONDS) || 500
@@ -50,7 +50,7 @@ routes.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
         const { hash } = req.params
         const cachedResponse = mcache.get(`scan/${hash}`)
         if (cachedResponse) {
-            return res.json(cachedResponse);
+        return res.json(cachedResponse);
         }
         const fileDocument = await FileModel.findOne({ sha256hash: hash }, 'sha256hash path countOfScans size detectionData');
         if (!fileDocument) {
@@ -67,7 +67,7 @@ routes.get('/api/file/:hash/scan', async (req: Request, res: Response) => {
             return res.json(result);
         }
         else {
-            const fileHeader = getFileHeader(fileContent, MAX_CHARACTERS_ABOVE_OR_BELOW);
+            const fileHeader = getFileHeader(fileContent, MAX_CHARACTER_FILE_HEADER);
             const result = [{ "fileHeader": fileHeader, "hash": hash, "scanner": "ClamAV", "size": fileDocument.size, "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }];
             mcache.put(`scan/${hash}`, result, GET_SCAN_CACHE_SECONDS * 1000);
             return res.json(result);
