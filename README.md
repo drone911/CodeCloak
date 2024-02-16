@@ -1,4 +1,4 @@
-# CatchMeIfYouScan (WIP)
+# Code Cloak (WIP)
 Find what part of the pentesting code/binary is being caught by anti viruses.
 
 ## Why this idea
@@ -10,10 +10,10 @@ This method is not widely used as [YARA](https://www.malwarebytes.com/blog/news/
 1. Landing Page:
 <br/>
 <p align="center">
-  <img src="https://github.com/drone911/CatchMeIfYouScan/blob/main/images/Landing-Page.PNG" alt="Landing Page Desktop View">
+  <img src="https://github.com/drone911/CloakCloak/blob/main/images/Landing-Page.PNG" alt="Landing Page Desktop View">
 </p>
 2. Detections:
 <br/>
 <p align="center">
-  <img src="https://github.com/drone911/CatchMeIfYouScan/blob/main/images/Detections-Page.PNG" alt="Detections Page Desktop View">
+  <img src="https://github.com/drone911/CloakCloak/blob/main/images/Detections-Page.PNG" alt="Detections Page Desktop View">
 </p>
