@@ -4,3 +4,4 @@ node_modules
 colors.txt
 /backend/dist/**
 /backend/utility/malware/**
+/uploads/
