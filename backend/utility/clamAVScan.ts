@@ -8,8 +8,8 @@ const clamscan = new NodeClam();
 
 clamscan.init({
     clamdscan: {
-        port: Number(process.env.NODE_CLAM_PORT) || 3310,
-        host: "localhost"
+        socket: "/var/run/clamav/clamd.ctl",
+        host: "127.0.0.1"
     },
     scanLog: process.env.NODE_CLAM_LOG_DIRECTORY || '/ClamAV/log'
 })
