@@ -4,7 +4,7 @@ import * as stream from 'stream';
 
 import * as NodeClam from 'clamscan';
 
-const clamscan = new NodeClam();
+const clamscan = new NodeClam.default();
 
 clamscan.init({
     clamdscan: {

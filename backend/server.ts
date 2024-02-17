@@ -8,14 +8,14 @@ import landingPageRoutes from './routes/landingPageRoutes';
 import scanPageRoutes from './routes/scanPageRoute'
 
 
-const app = express();
+const app = express.default();
 
 const corsOptions = {
     origin: process.env.REACT_CORS_ORIGIN,
 };
 
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors.default(corsOptions));
 app.use(Helmet());
 
 app.get('/test', (req: Request, res: Response) => {

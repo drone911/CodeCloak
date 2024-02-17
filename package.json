@@ -4,6 +4,8 @@
   "description": "Find what part of the pentesting code/binary is being caught by anti viruses.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc -p backend",
+    "start": "node ./backend/dist/start.js",
     "test": "jest",
     "client": "npm start --prefix frontend",
     "server": "npx nodemon ./backend/start.ts",

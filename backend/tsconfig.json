@@ -2,12 +2,13 @@
     "compilerOptions": {
         "target": "es2018",
         "module": "commonjs",
-        "outDir": "./backend/dist",
-        "rootDir": "./backend",
+        "outDir": "./dist",
+        "rootDir": ".",
         "strict": true,
+        "esModuleInterop": true,
     },
     "include": [
-        "./backend/**/*.ts"
+        "./**/*.ts"
     ],
     "exclude": [
         "node_modules"
