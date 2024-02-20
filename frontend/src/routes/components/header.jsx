@@ -15,24 +15,23 @@ const Search = styled('div')(({ theme, isTabScreen }) => ({
     display: "flex",
     justifyContent: "flex-start",
     borderRadius: "40px",
-    paddingBlock: isTabScreen? "0.3rem": "",
+    paddingBlock: isTabScreen ? "0.3rem" : "",
     backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    marginLeft: isTabScreen? "0.5rem": 0,
-    marginRight: isTabScreen? "0.5rem": 0,
-    transition: "width 1s ease",
+    marginLeft: isTabScreen ? "0.5rem" : 0,
+    marginRight: isTabScreen ? "0.5rem" : 0,
     '& .MuiInputBase-root': {
         transition: "width 1s ease",
     },
-    width: isTabScreen? "95%": '100%',
+    width: isTabScreen ? "95%" : '100%',
     [theme.breakpoints.up('sm')]: {
         marginLeft: theme.spacing(3),
         width: 'auto',
     },
     '&:focus-within': {
-        width: isTabScreen ? "100%" : "40vw"
+        width: isTabScreen ? "95%" : "40vw"
     }
 }));
 

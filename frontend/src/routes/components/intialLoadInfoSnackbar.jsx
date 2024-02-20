@@ -23,7 +23,7 @@ const IntialLoadInfoSnackbar = ({ isTabScreen }) => {
             setShowLoadInfo(true);
             setCookie("loadInfoShown", true, 1);
         }
-    });
+    }, []);
 
     return (
         <Snackbar open={showLoadInfo} anchorOrigin={{ vertical: isTabScreen ? "center" : "bottom", horizontal: "center" }}>
