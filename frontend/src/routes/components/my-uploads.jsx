@@ -47,7 +47,7 @@ const columns = [
     { id: 'common_name', label: 'Common Name', maxWidth: "8rem" },
 ];
 
-function createData(sha256, size, detections, common_name) {
+function toHumanReadable(sha256, size, detections, common_name) {
     size = numeral(size).format("0.0b");
     detections = numeral(detections).format("a");
     console.log("com", common_name);
@@ -58,12 +58,6 @@ function createData(sha256, size, detections, common_name) {
     return { sha256, size, detections, common_name };
 }
 
-// const rows = [
-//     createData('Lockbit 2.0', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1324171354, 3287263, 1),
-//     createData('Win/Stuxnet', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1403500365, 9596961, 2),
-//     createData('Win/Stuxnet2', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 60483973, 301340, 3),
-//     createData('Win/Stuxnet3', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 327167434, 9833520, 4),
-// ];
 const MyUploadsTableRow = ({ row, index }) => {
     return (
         <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
@@ -117,7 +111,7 @@ const MyUploads = () => {
             setRecentFilesResponse(response);
             setIsMyUploadsFetchComplete(true);
             setRows(response.data.map((recentFile) => {
-                return createData(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
+                return toHumanReadable(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
             }))
         };
         if (uploadsPresent) {
@@ -143,7 +137,7 @@ const MyUploads = () => {
 
             }
             {
-                uploadsPresent && <TableContainer sx={{ maxHeight: "50vh" }}>
+                uploadsPresent && <TableContainer sx={{ maxHeight: "55vh" }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <StyledTableRow>

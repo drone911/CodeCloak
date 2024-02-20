@@ -41,10 +41,10 @@ const columns = [
         align: 'right',
         format: (value) => value.toLocaleString('en-US')
     },
-    { id: 'common_name', label: 'Common Name', maxWidth: "8rem"},
+    { id: 'common_name', label: 'Common Name', maxWidth: "8rem" },
 ];
 
-function createData(sha256, size, detections, common_name) {
+function toHumanReadable(sha256, size, detections, common_name) {
     size = numeral(size).format("0.0b");
     detections = numeral(detections).format("a");
     if (!common_name) {
@@ -53,20 +53,13 @@ function createData(sha256, size, detections, common_name) {
     return { sha256, size, detections, common_name };
 }
 
-// let rows = [
-//     createData('Lockbit 2.0', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1324171354, 3287263),
-//     createData('Win/Stuxnet', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 1403500365, 9596961),
-//     createData('Win/Stuxnet2', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 60483973, 301340),
-//     createData('Win/Stuxnet3', 'f5f35e3cc7e63f627d2794f73513a80c1b76bd4aa265b3681e39595c4956b5c7', 327167434, 9833520),
-// ];
-
 
 const RecentFiles = () => {
     const data = useLoaderData();
     const recentFilesResponse = data.recent_uploads;
 
     return (
-        <TableContainer sx={{ maxHeight: "50vh" }}>
+        <TableContainer sx={{ maxHeight: "55vh" }}>
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <StyledTableRow>
@@ -74,7 +67,7 @@ const RecentFiles = () => {
                             <StyledTableCell
                                 key={column.id}
                                 style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
-                                sx={{ maxWidth: "3rem", textOverflow: "ellipsis", overflow: 'hidden' }}
+                                sx={{ maxWidth: "8rem", textOverflow: "ellipsis", overflow: 'none' }}
                             >
                                 {column.label}
                             </StyledTableCell>
@@ -110,7 +103,7 @@ const RecentFiles = () => {
                             }
                             children={(recentFilesResponse) => {
                                 let rows = recentFilesResponse.data.map((recentFile) => {
-                                    return createData(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
+                                    return toHumanReadable(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
                                 })
                                 return rows.map((row, index) => {
                                     return (

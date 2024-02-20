@@ -266,7 +266,7 @@ const ShowDetections = ({ isSmallScreen }) => {
                                                 </Link>
                                             </Box>
                                             <Box sx={{ display: 'flex', alignContent: 'flex-end', flexDirection: "column" }}>
-                                                <Typography sx={{ fontWeight: "600", color: "var(--primary-text-dark-600)" }} variant="body2" >
+                                                <Typography sx={{ fontWeight: "600", textAlign: "end", color: "var(--primary-text-dark-600)" }} variant="body2" >
                                                     File Size
                                                 </Typography>
                                                 <Typography variant='body1'>

@@ -38,13 +38,13 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
 
         {scanMetadata.data[0].detections && scanMetadata.data[0].detections.map((detection, index) => (
             <React.Fragment key={index + 1}>
-                <Grid item xs={1} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
+                <Grid item xs={1.5} md={0.5} sx={{ paddingTop: 1, borderInline: "1px solid var(--ds-border,#ebecf0)", backgroundColor: "var(--ds-lightest-grey)", display: "flex", alignContent: "center", justifyContent: "center" }}>
 
                     <Typography variant="h5" sx={{ fontSize: "1.1rem", paddingTop: "6px", fontWeight: "500", color: "var(--lt-color-gray-600)" }}>
                         {index + 1}.
                     </Typography>
                 </Grid>
-                <Grid item xs={8} md={11.5} sx={{
+                <Grid item xs={10.5} md={11.5} sx={{
                     paddingY: 1, borderLeft: "1px solid var(--ds-border,#ebecf0)"
                 }}>
                     <Stack spacing={2}>
