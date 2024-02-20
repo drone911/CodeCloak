@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { AppBar, styled, alpha, InputBase, ThemeProvider, Toolbar, Typography, IconButton, Drawer, Box, Divider, Stack } from "@mui/material";
+import { AppBar, styled, alpha, InputBase, ThemeProvider, Toolbar, Typography, IconButton, Drawer, Box, Stack } from "@mui/material";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import SearchIcon from '@mui/icons-material/Search';
@@ -15,17 +15,18 @@ const Search = styled('div')(({ theme, isTabScreen }) => ({
     display: "flex",
     justifyContent: "flex-start",
     borderRadius: "40px",
+    paddingBlock: isTabScreen? "0.3rem": "",
     backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
+    marginLeft: isTabScreen? "0.5rem": 0,
+    marginRight: isTabScreen? "0.5rem": 0,
     transition: "width 1s ease",
     '& .MuiInputBase-root': {
         transition: "width 1s ease",
     },
-    width: '100%',
+    width: isTabScreen? "95%": '100%',
     [theme.breakpoints.up('sm')]: {
         marginLeft: theme.spacing(3),
         width: 'auto',
@@ -71,7 +72,6 @@ const StyledInputBase = styled(InputBase)(({ theme, isTabScreen }) => ({
 
 const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeTheme }) => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const [searchValue, setSearchValue] = React.useState("")
     const navigate = useNavigate()
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -86,6 +86,9 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
         event.preventDefault();
         const searchInput = document.getElementById("searchInput");
         const text = searchInput.value;
+        if (!text || text === "") {
+            return;
+        }
         searchInput.value = "";
         navigate(`/detect/${text}`);
     }
@@ -117,7 +120,7 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                         </Link>
                         <Typography variant="h6" component="div">
                             <Link to="/" rel="noopener noreferrer" style={{ marginLeft: "0.5rem", textDecoration: 'none', color: 'inherit', textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            Code Cloak
+                                Code Cloak
                             </Link>
                         </Typography>
                     </Box>
@@ -131,7 +134,7 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                                 open={isMenuOpen}
                                 onClose={toggleDrawer(false)}
                             >
-                                <Stack spacing={2} sx={{ marginTop: "1.5rem", paddingX: "0.5rem"}}>
+                                <Stack spacing={2} sx={{ marginTop: "1.5rem", paddingX: "0.5rem" }}>
                                     <Box>
                                         <form onSubmit={handleSearchSubmit}>
                                             <Search isTabScreen={isTabScreen}>
