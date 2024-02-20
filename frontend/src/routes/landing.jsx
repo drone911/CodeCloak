@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 
 import RecentFiles from './components/recent-files';
 import MyUploads from './components/my-uploads';
+import IntialLoadInfoSnackbar from './components/intialLoadInfoSnackbar';
 
 import { appendValue } from '../reducers/uploadedFilesSlice';
 
@@ -24,12 +25,10 @@ import Box from '@mui/material/Box';
 
 
 import LinearProgress from '@mui/material/LinearProgress';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import Skeleton from '@mui/material/Skeleton';
 
 
-import { Snackbar, Alert, Paper, Stack, useTheme, Divider } from '@mui/material';
-import Footer from './components/footer';
+import { Snackbar, Alert, Paper, Stack, Divider } from '@mui/material';
 
 
 const landingLoader = async () => {
@@ -273,6 +272,7 @@ const Landing = () => {
 
                 </Grid>
             </Grid>
+            <IntialLoadInfoSnackbar isTabScreen={isTabScreen} />
             <Snackbar open={showFileUploadSuccessSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
                     File uploaded successfully
