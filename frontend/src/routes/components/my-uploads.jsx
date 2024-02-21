@@ -123,7 +123,7 @@ const MyUploads = () => {
     return (
         <React.Fragment>
 
-            {!uploadsPresent &&
+            { !uploadsPresent && rows.length < 1 &&
                 <Box sx={{ minHeight: "35vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
                     <Typography variant="h6">
                         No Uploads Yet
@@ -133,11 +133,9 @@ const MyUploads = () => {
                     </Typography>
 
                 </Box>
-
-
             }
             {
-                uploadsPresent && <TableContainer sx={{ maxHeight: "55vh" }}>
+                uploadsPresent && rows.length > 0 && <TableContainer sx={{ maxHeight: "55vh" }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <StyledTableRow>

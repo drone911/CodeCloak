@@ -27,7 +27,7 @@ const IntialLoadInfoSnackbar = ({ isTabScreen }) => {
 
     return (
         <Snackbar open={showLoadInfo} anchorOrigin={{ vertical: isTabScreen ? "center" : "bottom", horizontal: "center" }}>
-            <SnackbarContent sx={{ backgroundColor: theme.palette.grey[800] }} message={isTabScreen ? "Please wait for backend to spin up" : "The backend is on a free host. Please give it about 10 seconds to start. Appreciate your patience!"} action={action} />
+            <SnackbarContent sx={{ backgroundColor: theme.palette.grey[800] }} message={isTabScreen ? "backend spinning up, appreciate your patience!" : "The backend is on a free host. Please give it about 10 seconds to start. Appreciate your patience!"} action={action} />
         </Snackbar>
     );
 }
