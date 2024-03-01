@@ -19,7 +19,7 @@ app.use(cors.default(corsOptions));
 app.use(Helmet());
 
 app.get('/test', (req: Request, res: Response) => {
-    res.json({ "message": "Test route works!" });
+    return res.json({ "message": "Test route works!" });
 });
 
 app.use(detectPageRoutes);

@@ -14,7 +14,7 @@ const GET_RECENT_FILES_CACHE_SECONDS = Number(process.env.NODE_GET_RECENT_FILES_
 
 
 const storage = multer.diskStorage({
-    destination: process.env.NODE_UPLOAD_DIRECTORY || '/uploads',
+    destination: process.env.NODE_UPLOAD_DIRECTORY || 'upload',
     filename: (req, file, cb) => {
         const hash = crypto.createHash('sha256');
         hash.update(file.originalname + Date.now());
