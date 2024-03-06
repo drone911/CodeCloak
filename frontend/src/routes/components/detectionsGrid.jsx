@@ -10,7 +10,7 @@ const CodeSpan = styled('span')(({ theme }) => ({
         fontSize: '1.1rem',
     },
     color: theme.palette.grey[800],
-    wordWrap: "break-word",
+    wordBreak: "break-all",
     margin: "0px",
     marginX: "2px"
 }));
@@ -56,7 +56,7 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                             }}
                         >
                             {
-                                detection.paddedContentAfter &&
+                                detection.paddedContentBefore &&
                                 <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
                                     {detection.paddedContentBefore}
                                 </CodeSpan>
@@ -125,8 +125,9 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                 </Grid>
             </React.Fragment>
 
-        ))}
-    </React.Fragment>)
+        ))
+        }
+    </React.Fragment >)
 }
 
 const DetectionsNotFoundGrid = ({ scanMetadata }) => {
