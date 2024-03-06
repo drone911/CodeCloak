@@ -254,7 +254,7 @@ const Landing = () => {
                             </Grid>
                         }
                     </Grid>
-                    <Grid item xs={12} md={12} sx={{marginBottom: "2rem"}}>
+                    <Grid item xs={12} md={12} sx={{marginBottom: "2rem", alignSelf: "flex-start"}}>
                         <Paper elevation={2} >
                             <Tabs value={value} onChange={handleChange} textColor="primary"
                                 indicatorColor="primary" aria-label="basic tabs example">

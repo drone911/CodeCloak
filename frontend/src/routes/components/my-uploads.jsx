@@ -50,7 +50,6 @@ const columns = [
 function toHumanReadable(sha256, size, detections, common_name) {
     size = numeral(size).format("0.0b");
     detections = numeral(detections).format("a");
-    console.log("com", common_name);
 
     if (!common_name) {
         common_name = "Not available"
@@ -65,8 +64,8 @@ const MyUploadsTableRow = ({ row, index, isTabScreen }) => {
                 columns.map((column) => {
                     const value = row[column.id];
                     return (
-                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth,  maxInlineSize: isTabScreen? "": "2px", textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                        {
+                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth, maxInlineSize: isTabScreen ? "" : "2px", textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                            {
                                 column.id !== "sha256" && (
                                     column.format && typeof value === 'number'
                                         ? column.format(value)
@@ -110,33 +109,24 @@ const MyUploads = () => {
         const fetchData = async () => {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/files`, { "hashes": uploadedFileHashes });
             setRecentFilesResponse(response);
-            setIsMyUploadsFetchComplete(true);
             setRows(response.data.map((recentFile) => {
                 return toHumanReadable(recentFile.sha256hash, recentFile.size, recentFile.detectionsCount, recentFile.commonName);
             }))
+            setIsMyUploadsFetchComplete(true);
         };
         if (uploadsPresent) {
             fetchData();
+        } else {
+            setIsMyUploadsFetchComplete(true);
         }
     }, []);
 
 
     return (
         <React.Fragment>
+            {!isMyUploadsFetchComplete &&
 
-            { !uploadsPresent && rows.length < 1 &&
-                <Box sx={{ minHeight: "35vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
-                    <Typography variant="h6">
-                        No Uploads Yet
-                    </Typography>
-                    <Typography variant="h5" color="primary" sx={{ marginTop: "0.7rem", fontWeight: 600 }}>
-                        {`(ノ￣□￣)ノ ~┻━┻`}
-                    </Typography>
-
-                </Box>
-            }
-            {
-                uploadsPresent && rows.length > 0 && <TableContainer sx={{ maxHeight: "55vh" }}>
+                <TableContainer sx={{ maxHeight: "55vh" }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <StyledTableRow>
@@ -152,40 +142,67 @@ const MyUploads = () => {
                             </StyledTableRow>
                         </TableHead>
                         <TableBody>
+                            <React.Fragment>
 
-                            {!isMyUploadsFetchComplete &&
-                                <React.Fragment>
-                                    {Array.from({ length: 5 }).map((_, index) => {
-                                        return (
-                                            <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                                {columns.map((column) => {
-                                                    return (
-                                                        <StyledTableCell key={column.id}>
-                                                            <Skeleton></Skeleton>
-                                                        </StyledTableCell>
-                                                    );
-                                                }
-                                                )}
-                                            </StyledTableRow>)
-                                    })}
-                                </React.Fragment>
-                            }
-                            {/* errorElement={
-                    <Typography color="error" variant="body1" >
-                    Error
-                    </Typography>
-                } */}
-                            {isMyUploadsFetchComplete &&
-                                <React.Fragment>
-                                    {
-                                        rows.map((row, index) => {
+                            {Array.from({ length: 5 }).map((_, index) => {
+                                return (
+                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                        {columns.map((column) => {
                                             return (
-                                                <MyUploadsTableRow row={row} index={index} isTabScreen={isTabScreen}></MyUploadsTableRow>
+                                                <StyledTableCell key={column.id}>
+                                                    <Skeleton></Skeleton>
+                                                </StyledTableCell>
                                             );
-                                        })
+                                        }
+                                        )}
+                                    </StyledTableRow>)
+                            })}
+                            </React.Fragment>
+                            {/* errorElement={
+                            <Typography color="error" variant="body1" >
+                            Error
+                            </Typography>
+                        } */}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            }
 
-                                    }
-                                </React.Fragment>
+            {isMyUploadsFetchComplete && rows.length < 1 &&
+                <Box sx={{ minHeight: "35vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} >
+                    <Typography variant="h6">
+                        No Uploads Yet
+                    </Typography>
+                    <Typography variant="h5" color="primary" sx={{ marginTop: "0.7rem", fontWeight: 600 }}>
+                        {`(ノ￣□￣)ノ ~┻━┻`}
+                    </Typography>
+
+                </Box>
+            }
+            {isMyUploadsFetchComplete && rows.length >= 1 &&
+                <TableContainer sx={{ maxHeight: "55vh" }}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <StyledTableRow>
+                                {columns.map((column) => (
+                                    <StyledTableCell
+                                        key={column.id}
+                                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                                        sx={{ textOverflow: "ellipsis", overflow: 'hidden' }}
+                                    >
+                                        {column.label}
+                                    </StyledTableCell>
+                                ))}
+                            </StyledTableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                rows.map((row, index) => {
+                                    return (
+                                        <MyUploadsTableRow row={row} index={index} isTabScreen={isTabScreen}></MyUploadsTableRow>
+                                    );
+                                })
+
                             }
                         </TableBody>
                     </Table>
