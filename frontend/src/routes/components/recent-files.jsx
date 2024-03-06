@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Await, useLoaderData } from "react-router-dom";
+import { Await, useLoaderData, useOutletContext } from "react-router-dom";
 import numeral from "numeral";
 
 
@@ -55,6 +55,7 @@ function toHumanReadable(sha256, size, detections, common_name) {
 
 
 const RecentFiles = () => {
+    const isTabScreen = useOutletContext()[1];
     const data = useLoaderData();
     const recentFilesResponse = data.recent_uploads;
 
@@ -112,7 +113,7 @@ const RecentFiles = () => {
                                                 columns.map((column) => {
                                                     const value = row[column.id];
                                                     return (
-                                                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth,  maxInlineSize: isTabScreen? "": "2px", textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                                             {
                                                                 column.id !== "sha256" && (
                                                                     column.format && typeof value === 'number'

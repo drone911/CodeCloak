@@ -6,7 +6,7 @@ import { Grid, TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
 import { selectUploadedFileHashesArray } from '../../reducers/uploadedFilesSlice';
 import { useSelector } from 'react-redux';
 import numeral from "numeral";
-import { useLoaderData, Await } from "react-router-dom";
+import { useLoaderData, Await, useOutletContext } from "react-router-dom";
 
 import LaunchIcon from "@mui/icons-material/Launch"
 
@@ -58,15 +58,15 @@ function toHumanReadable(sha256, size, detections, common_name) {
     return { sha256, size, detections, common_name };
 }
 
-const MyUploadsTableRow = ({ row, index }) => {
+const MyUploadsTableRow = ({ row, index, isTabScreen }) => {
     return (
         <StyledTableRow hover role="checkbox" tabIndex={-1} key={index}>
             {
                 columns.map((column) => {
                     const value = row[column.id];
                     return (
-                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth, textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                            {
+                        <StyledTableCell key={column.id} align={column.align} sx={{ maxWidth: column.maxWidth,  maxInlineSize: isTabScreen? "": "2px", textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                        {
                                 column.id !== "sha256" && (
                                     column.format && typeof value === 'number'
                                         ? column.format(value)
@@ -104,6 +104,7 @@ const MyUploads = () => {
     const [recentFilesResponse, setRecentFilesResponse] = React.useState(null);
     const [isMyUploadsFetchComplete, setIsMyUploadsFetchComplete] = React.useState(false);
     const [rows, setRows] = React.useState([]);
+    const isTabScreen = useOutletContext()[1];
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -179,7 +180,7 @@ const MyUploads = () => {
                                     {
                                         rows.map((row, index) => {
                                             return (
-                                                <MyUploadsTableRow row={row} index={index}></MyUploadsTableRow>
+                                                <MyUploadsTableRow row={row} index={index} isTabScreen={isTabScreen}></MyUploadsTableRow>
                                             );
                                         })
 

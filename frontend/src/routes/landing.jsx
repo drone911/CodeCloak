@@ -170,7 +170,7 @@ const Landing = () => {
                     ></div> */}
                     <Grid container xs={12} md={12}>
                         <Grid item xs={12} md={8}>
-                            {isTabScreen && <Divider sx={{ marginBottom: "1.5rem" }}></Divider>}
+                            {isTabScreen && <Divider sx={{  marginInline: "auto", marginBottom: "1.5rem" }}></Divider>}
                             <Paper sx={{ px: isSmallScreen ? 2 : 3, py: isSmallScreen ? 2 : 2, mx: isSmallScreen ? 2 : 0, maxWidth: isSmallScreen ? "100vw" : "60vw", margin: "0 auto" }} elevation={isSmallScreen ? 0 : 2}>
                                 <Typography variant="body1" color="primary">
                                     Upload Pen-Testing Code or Binary
@@ -211,7 +211,7 @@ const Landing = () => {
 
                                 </form>
                             </Paper>
-
+                            {isTabScreen && <Divider sx={{  marginInline: "auto", marginTop: "1.5rem", marginBottom: "1.5rem" }}></Divider>}
                         </Grid>
                         {!isSmallScreen && !isTabScreen &&
                             <Grid item xs={12} md={4} display="flex" justifyContent="center">
@@ -254,7 +254,7 @@ const Landing = () => {
                             </Grid>
                         }
                     </Grid>
-                    <Grid item xs={12} md={12}>
+                    <Grid item xs={12} md={12} sx={{marginBottom: "2rem"}}>
                         <Paper elevation={2} >
                             <Tabs value={value} onChange={handleChange} textColor="primary"
                                 indicatorColor="primary" aria-label="basic tabs example">
