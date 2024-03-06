@@ -2,17 +2,18 @@ import React from "react"
 import { styled, Box, Typography, Unstable_Grid2 as Grid, Stack, Skeleton } from "@mui/material"
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 
-const CodeSpan = styled('span')({
+const CodeSpan = styled('span')(({ theme }) => ({
     borderRadius: "4px",
     padding: "1px 3px 1px 3px",
     fontSize: "0.9rem",
     '@media (min-width:600px)': {
         fontSize: '1.1rem',
     },
+    color: theme.palette.grey[800],
     wordWrap: "break-word",
     margin: "0px",
     marginX: "2px"
-});
+}));
 
 const HoverSpan = styled(CodeSpan)({
     transition: "font-size 0.3s ease, box-shadow 0.2s ease-out",
@@ -54,9 +55,12 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                 paddingLeft: "1rem"
                             }}
                         >
-                            <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
-                                {detection.paddedContentBefore}
-                            </CodeSpan>
+                            {
+                                detection.paddedContentAfter &&
+                                <CodeSpan style={{ backgroundColor: "var(--ds-background-green-subtle)" }}>
+                                    {detection.paddedContentBefore}
+                                </CodeSpan>
+                            }
                             <HtmlTooltip
                                 title={
                                     <Typography color="white">
@@ -86,7 +90,6 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                 </HoverSpan>
                                 {
                                     detection.maliciousContentContinue &&
-
                                     <React.Fragment>
                                         <span style={{
                                             display: "inline-block",
@@ -109,11 +112,14 @@ const DetectionsFoundGrid = ({ scanMetadata }) => {
                                 }
 
                             </HtmlTooltip>
-                            <CodeSpan style={{
-                                backgroundColor: 'var(--ds-background-green-subtle)'
-                            }}>
-                                {detection.paddedContentAfter}
-                            </CodeSpan>
+                            {
+                                detection.paddedContentAfter &&
+                                <CodeSpan style={{
+                                    backgroundColor: 'var(--ds-background-green-subtle)'
+                                }}>
+                                    {detection.paddedContentAfter}
+                                </CodeSpan>
+                            }
                         </Box>
                     </Stack>
                 </Grid>

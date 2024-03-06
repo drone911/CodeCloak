@@ -191,7 +191,6 @@ const ShowDetections = ({ isSmallScreen }) => {
         setDetectionsMaxHeight(detectionsMaxHeight + 40);
         setTimeout(() => {
             const expandScrollButtonRef = document.getElementById("expandDetectionsButton")
-            console.log(expandScrollButtonRef);
             scrollToElement(expandScrollButtonRef)
         }, 0);
     }

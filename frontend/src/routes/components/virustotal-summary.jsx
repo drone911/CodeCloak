@@ -16,7 +16,12 @@ const reputationMap = {
         "reputationColor": "green",
         "reputationBackgroundColor": "lightgreen"
     },
-    "[0, 50)": {
+    "0": {
+        "reputationText": "Neutral",
+        "reputationColor": "green",
+        "reputationBackgroundColor": "lightgreen",
+    },
+    "(0, 50)": {
         "reputationText": "Benign",
         "reputationColor": "green",
         "reputationBackgroundColor": "lightgreen",
@@ -201,8 +206,10 @@ const VirusTotalPaper = ({ metadata, theme }) => {
         ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[-100, -50]"]);
     } else if (reputation < 0) {
         ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["(-50,0)"]);
+    } else if (reputation == 0) {
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["0"]);
     } else if (reputation < 50) {
-        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[0, 50)"]);
+        ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["(0, 50)"]);
     } else {
         ({ reputationText, reputationColor, reputationBackgroundColor } = reputationMap["[50, 100]"]);
     }
@@ -217,10 +224,10 @@ const VirusTotalPaper = ({ metadata, theme }) => {
                         Reputation
                     </Typography>
                     <Button px={3} py={2} variant="contained" sx={{
-                        '&:hover': {
+                            '&:hover': {
                             backgroundColor: reputationBackgroundColor,
                             boxShadow: "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
-                            cursor: "default"
+                            cursor: "default",
                         }, color: reputationColor, backgroundColor: reputationBackgroundColor
                     }}>
                         <Typography variant='h6'>
