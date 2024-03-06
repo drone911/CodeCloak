@@ -272,7 +272,7 @@ const Landing = () => {
 
                 </Grid>
             </Grid>
-            <IntialLoadInfoSnackbar isTabScreen={isTabScreen} />
+            { Boolean(process.env.REACT_APP_SHOW_LOADING_SNACKBAR) && <IntialLoadInfoSnackbar isTabScreen={isTabScreen} />}
             <Snackbar open={showFileUploadSuccessSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
                     File uploaded successfully
