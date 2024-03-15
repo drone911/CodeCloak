@@ -1,4 +1,4 @@
-# Code Cloak (WIP)
+# Code Cloak
 Find what part of the pentesting code/binary is being caught by anti viruses.
 
 ## Why this idea
@@ -6,7 +6,7 @@ During my penetration testing class, I discovered that the testing code and bina
 
 This method is not widely used as [YARA](https://www.malwarebytes.com/blog/news/2017/09/explained-yara-rules) rules specify minimum sizes, but it could still give a good starting point. 
 
-## Progress
+## Screenshots
 1. Landing Page:
 <br/>
 <p align="center">
