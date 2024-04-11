@@ -27,8 +27,8 @@ const App = () => {
       <CssBaseline>
         <Header setDarkMode={setDarkMode} darkMode={darkMode} isSmallScreen={isSmallScreen} isTabScreen={isTabScreen} darkModeTheme={darkThemePadded}></Header>
         <Outlet context={[darkMode, isSmallScreen, isTabScreen, darkThemePadded]} />
+        <Footer darkModeTheme={darkThemePadded}></Footer>
       </CssBaseline>
-      <Footer darkModeTheme={darkThemePadded}></Footer>
 
     </ThemeProvider >
 

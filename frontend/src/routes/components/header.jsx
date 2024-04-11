@@ -109,8 +109,8 @@ const Header = ({ setDarkMode, darkMode, isSmallScreen, isTabScreen, darkModeThe
                                     alignItems: 'center',
                                     marginRight: '8px',
                                     paddingLeft: '4px',
-                                    marginTop: "0.5rem",
-                                    marginBottom: "0.5rem",
+                                    marginTop: "0.75rem",
+                                    marginBottom: "0.75rem",
 
                                 }}
                             >
