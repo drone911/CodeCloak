@@ -269,7 +269,7 @@ const ShowDetections = ({ isSmallScreen }) => {
                                                     File Size
                                                 </Typography>
                                                 <Typography variant='body1'>
-                                                    {numeral(metadata.data[0].size).format('0b')} / {metadata.data[0].size} Bytes
+                                                    <Typography display="inline" fontWeight={400} color={bigTextTheme.palette.grey[900]}>{numeral(metadata.data[0].size).format()}</Typography> <Typography display="inline" variant="body2" fontWeight={400}>Bytes</Typography> or <Typography display="inline" fontWeight={400} color={bigTextTheme.palette.grey[900]}>{numeral(metadata.data[0].size).format('0b').match("[0-9]*")[0]}</Typography> <Typography variant='body2' display="inline" fontWeight={400} color={bigTextTheme.palette.grey[900]}>{numeral(metadata.data[0].size).format('0b').match("[a-zA-Z]+")[0]}</Typography>
                                                 </Typography>
                                             </Box>
                                         </Box>
