@@ -2,6 +2,7 @@ import * as express from "express";
 import { Request, Response } from 'express';
 import { FileModel } from '../schemas/FileSchema';
 import * as fs from 'fs';
+import * as mcache from 'memory-cache';
 import { scanFileWithClamAV } from '../utility/clamAVScan';
 import { getFileHeader, getRelaventFileContent } from '../utility/fileContent';
 
@@ -33,10 +34,11 @@ routes.post('/api/file/:hash/scan', async (req: Request, res: Response) => {
         fileDocument.countOfScans += 1;
         console.debug(`Scanned file ${fileDocument.sha256hash} ${fileDocument.countOfScans} times, and found ${fileDocument.detectionsCount} detections.`)
         await fileDocument.save();
-
+        mcache.del("db_file_count");
         const fileContent = fileBuffer.toString('utf-8');
         if (detections.length > 0) {
-            const detectionsWithData = getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_MALICIOUS, MAX_CHARACTERS_ABOVE_OR_BELOW)
+            const detectionsWithData = getRelaventFileContent(fileContent, detections, MAX_CHARACTERS_MALICIOUS, MAX_CHARACTERS_ABOVE_OR_BELOW);
+            mcache.del("recent-five");
             return res.json([{ "detections": detectionsWithData, "hash": hash, "size": fileDocument.size, "scanner": "ClamAV", "scannerLogo": "https://www.clamav.net/assets/clamav-trademark.png", "scannerHome": "https://www.clamav.net/" }])
         }
         else {
