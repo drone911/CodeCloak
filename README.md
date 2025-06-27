@@ -10,10 +10,10 @@ This method is not widely used as [YARA](https://www.malwarebytes.com/blog/news/
 1. Landing Page:
 <br/>
 <p align="center">
-  <img src="https://github.com/drone911/CodeCloak/blob/main/images/Landing-Page.PNG" alt="Landing Page Desktop View">
+  <img src="https://github.com/drone911/CodeCloak/blob/main/Images/detectionPage.png" alt="Landing Page Desktop View">
 </p>
 2. Detections:
 <br/>
 <p align="center">
-  <img src="https://github.com/drone911/CodeCloak/blob/main/images/Detections-Page.PNG" alt="Detections Page Desktop View">
+  <img src="https://github.com/drone911/CodeCloak/blob/main/Images/LandingPage.png" alt="Detections Page Desktop View">
 </p>
