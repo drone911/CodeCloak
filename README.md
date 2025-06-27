@@ -14,6 +14,7 @@ This method is not widely used as [YARA](https://www.malwarebytes.com/blog/news/
 </p>
 2. Detections:
 <br/>
+<br/>
 <p align="center">
   <img src="https://github.com/drone911/CodeCloak/blob/main/Images/detectionPage.png" alt="Detections Page Desktop View">
 </p>
